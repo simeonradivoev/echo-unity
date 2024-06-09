@@ -1,0 +1,42 @@
+# Unity-specific
+Temp/
+Library/
+Obj/
+UnityGenerated/
+UnityExport/
+ProjectSettings/
+Builds/
+Screenshots/
+Logs/
+
+# Build files
+*.apk
+*.ipa
+*.unitypackage
+*.exe
+*.dll
+*.so
+*.dylib
+*.rlib
+*.zip
+*.a
+*.o
+*.csproj
+*.sln
+*.userprefs
+*.pidb
+*.suo
+*.unityproj
+*.booproj
+*.user
+*.csproj.user
+*.csproj.vspscc
+*.pidb.meta
+*.pdb
+*.log
+*.stackTrace.txt
+*.dll.mdb
+*.dll.mdb.meta
+
+# Misc
+LumiProbes_log.txt

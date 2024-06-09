@@ -1,0 +1,117 @@
+fileFormatVersion: 2
+guid: 8fa226ea66b73684088f97714f177c1f
+importerOverride:
+  nativeImporterType: 2089858483
+  scriptedImporterType:
+    serializedVersion: 2
+    Hash: b0f0efd5afe97376296c08894c84a3f1
+ScriptedImporter:
+  internalIDToNameTable: []
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: DarWall
+    second: {fileID: 2100000, guid: ef2d174568ccdd8439c123c81836e2e6, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Dark
+    second: {fileID: 2100000, guid: c6019c7f7addc864d97e139b323957f1, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Door
+    second: {fileID: 2100000, guid: b950f9e4a44fdab4191df50ae5983d09, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Glass
+    second: {fileID: 2100000, guid: a0f0cf32bf5bfa0498cb1cb9e9b2c58e, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Handle
+    second: {fileID: 2100000, guid: b41648f217b4ab74a8022ee59f3a7d70, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Light
+    second: {fileID: 2100000, guid: 264be0cb463d25e4880bb905d5c88faf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: White
+    second: {fileID: 2100000, guid: d69ab63937d8e624c956b63fd4a68ad8, type: 2}
+  serializedVersion: 2
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
+  script: {fileID: 11500000, guid: 804e1ce4c496647cfa3f1a1134187c71, type: 3}
+  _removeEmptyRootObjects: 1
+  _scaleFactor: 1
+  _maximumLod: 300
+  _readWriteEnabled: 1
+  _generateColliders: 1
+  _swapUvs: 0
+  _generateLightmapUVs: 1
+  _importBlendShapeNames: 1
+  _blendShapeFrameWeight:
+    _option: 0
+    _multiplier: 1
+  _importNormals: 0
+  _importTangents: 0
+  _importCamera: 0
+  _importAnimations: 2
+  _addAnimatorComponent: 0
+  _animationLoopTime: 1
+  _animationLoopPose: 0
+  _importMaterials: 1
+  _enableGpuInstancing: 0
+  _useSceneNameIdentifier: 1
+  _textureCompression: -50
+  optimizeGameObjects: 0
+  materials:
+  - {fileID: -7098565394360792512, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: 1741209797510602166, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: -9007632685173550870, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: -8848810374240701247, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: 1788269377728665300, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: -5893160060819351940, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: 8556262120643298411, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  textures:
+  - {fileID: -3335217333795423520, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: 4987734965063691412, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  hasSceneData: 1
+  hasAnimationData: 0
+  hasMaterialData: 1
+  hasTextureData: 1
+  animations: []
+  _extensions:
+  - name: KHR_lights_punctual
+    supported: 1
+    used: 1
+    required: 1
+  - name: KHR_materials_emissive_strength
+    supported: 1
+    used: 1
+    required: 0
+  _textures:
+  - texture: {fileID: -3335217333795423520, guid: 8fa226ea66b73684088f97714f177c1f,
+      type: 3}
+    shouldBeLinear: 0
+    shouldBeNormalMap: 0
+  - texture: {fileID: 4987734965063691412, guid: 8fa226ea66b73684088f97714f177c1f,
+      type: 3}
+    shouldBeLinear: 0
+    shouldBeNormalMap: 0
+  - texture: {fileID: 4987734965063691412, guid: 8fa226ea66b73684088f97714f177c1f,
+      type: 3}
+    shouldBeLinear: 0
+    shouldBeNormalMap: 0
+  - texture: {fileID: 4987734965063691412, guid: 8fa226ea66b73684088f97714f177c1f,
+      type: 3}
+    shouldBeLinear: 0
+    shouldBeNormalMap: 0
+  _mainAssetIdentifier: scenes/Scene
+  _importPlugins: []

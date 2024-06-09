@@ -1,0 +1,22 @@
+{
+  "name": "UnityEcho.Interactables",
+  "rootNamespace": "",
+  "references": [
+    "nl.jeffreylanters.tweens",
+    "Unity.InputSystem",
+    "Unity.Mathematics",
+    "Unity.TextMeshPro",
+    "UIShapes",
+    "UnityEcho-Mechanics",
+    "UnityEcho.Objectives"
+  ],
+  "includePlatforms": [],
+  "excludePlatforms": [],
+  "allowUnsafeCode": false,
+  "overrideReferences": false,
+  "precompiledReferences": [],
+  "autoReferenced": true,
+  "defineConstraints": [],
+  "versionDefines": [],
+  "noEngineReferences": false
+}

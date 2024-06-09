@@ -1,0 +1,1 @@
+Exterior: https://sketchfab.com/3d-models/space-ship-472de059a0314ef1a26e5adeddf15d04

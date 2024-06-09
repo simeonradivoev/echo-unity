@@ -1,0 +1,25 @@
+{
+	"Grabbable": {
+		"tag": {
+			"defaultValue": "Grab",
+			"type": "String"
+		},
+		"static": {
+			"defaultValue": true,
+			"type": "Boolean"
+		},
+		"convex": {
+			"defaultValue": true,
+			"type": "Boolean",
+			"description": "Should the collider be convex"
+		}
+	},
+    "Rigidbody": {
+		"mass": {
+			"defaultValue": 1.0,
+			"type": "Float",
+			"min": 0.0,
+			"max": 200.0
+		}
+	}
+}
