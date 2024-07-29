@@ -11,7 +11,7 @@ I used the development presentation of Ready at Dawn over at GDC vault https://w
 - Procedural IK Hand Animations 🖐️
 - Full upper body IK estimation 🔎
 - Physically based Zero G Movement 🌌
-- 3D Touch screen Unity UI 📱
+- 3D Touch screen Unity UI (includes 3D finger position compensation) 📱
 - Sample demo level with simple objectives 🎯
 
 # Missing Features ❌
@@ -22,13 +22,13 @@ The thumb finger is more complicated than just a hinge joint, so I skipped it fo
 
 ### Lower Body Simulation 👜
 
-The floating body IK physics animation I kinda skipped since I didn't have enough time for it. But should be pretty straightforward to implement.
+The floating body IK physics animation I kinda skipped since I didn't have enough time for it. But it should be pretty straightforward to implement.
 
 # Implementation Details 💻
 
-Physics interactions differ q bit from Lone Echo ones. It simply comes down to not having low-level access to the physics engine in unity to implement the detailed solution from the GDC presentation. That's why I just use tweaked physics joins to make interactions feel nicer, with some additional tricks to make them more responsive.
+Physics interactions differ quite a bit from Lone Echo ones. It comes down to not having low-level access to the physics engine in unity to implement the detailed solution from the GDC presentation. That's why I just use tweaked physics joins to make interactions feel nicer, with some additional tricks to make them more responsive.
 
-The finger IK animation requires intersection calculations on the meshes as described by the GDC presentation. Again we don't have low level access to the physics engine and the connectivity of physics meshes to help with intersection calculations so I manually calculate them with code ripped from the unity physics package. This probably has some impact on performance but I managed to burstify the code so shouldn't be that much of an issue. I also cache each mesh.
+The finger IK animation requires intersection calculations on the meshes as described by the GDC presentation. Again we don't have low-level access to the physics engine and the triangle connectivity of physics meshes to help with intersection calculations so I manually calculate them with code ripped from the unity physics package. This probably impacts performance, but I managed to burstify the code, so shouldn't be that much of an issue. I also cache each mesh conectivity.
 
 # Packages Used 📦
 
