@@ -52,6 +52,13 @@ You can try the Windows build over at Itch.io [https://simeonradivoev.itch.io/un
 ![](https://img.itch.zone/aW1hZ2UvMjc1ODMzNS8xNjQ2MDA4OC5wbmc=/original/Qw1Q%2Fw.png)
 ![](https://img.itch.zone/aW1hZ2UvMjc1ODMzNS8xNjQ2MDA5MS5wbmc=/original/aiV0RC.png)
 
+# Using In your projects
+
+The code is separated into 3 portions, the player essential mechanics, the UI and the interactions. They should for the most part work on their own. The only essential one is the player mechanics.
+I made a minimal scene that has only the player controller, since the demo scene has a lot more code that isn't related to the player.
+
+Built using Unity 2022.3.13f1. Project files are included for quicker setup, but VR settings are specific for the quest 2 and windows
+
 # Contributing 🤝
 
 I didn't have time to implement all the features. Check out the issues to see what features are missing and need to be implemented or improved. Adding more sounds is always a bonus.
