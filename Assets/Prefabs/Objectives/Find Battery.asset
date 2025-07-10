@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 790eeb17e50e4d5b954bb30772031c01, type: 3}
   m_Name: Find Battery
   m_EditorClassIdentifier: 
-  _objective: '- I need a battery to restore the door controls'
+  _objective: '- I need a battery to restore door controls'

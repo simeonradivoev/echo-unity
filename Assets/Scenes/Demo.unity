@@ -143,6 +143,7 @@ GameObject:
   - component: {fileID: 16505613}
   - component: {fileID: 16505615}
   - component: {fileID: 16505616}
+  - component: {fileID: 16505617}
   m_Layer: 0
   m_Name: ---Managers---
   m_TagString: Untagged
@@ -211,6 +212,19 @@ MonoBehaviour:
   _onObjectiveCompleted:
     m_PersistentCalls:
       m_Calls: []
+--- !u!114 &16505617
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 16505612}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 46d6cfc73c5444afba9f4d3b75c2aa6a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _refreshRates: 5a0000004800000048000000
 --- !u!4 &25248352 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 3396878897884927917, guid: 51bd97925d2b9c342a433d99220a11af,
@@ -4108,14 +4122,14 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 16505616}
-        m_TargetAssemblyTypeName: DefaultNamespace.ObjectivesManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: UnityEcho.Objectives.ObjectivesManager, UnityEcho.Objectives
         m_MethodName: StartObjective
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: b0ef8f01f6754954e82be431c83b1bc7,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: DefaultNamespace.ObjectiveDefinition,
-            Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: UnityEcho.Objectives.ObjectiveDefinition,
+            UnityEcho.Objectives
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -6802,13 +6816,13 @@ MonoBehaviour:
   m_VolumeTrigger: {fileID: 0}
   m_VolumeFrameworkUpdateModeOption: 2
   m_RenderPostProcessing: 1
-  m_Antialiasing: 3
+  m_Antialiasing: 0
   m_AntialiasingQuality: 0
   m_StopNaN: 0
   m_Dithering: 1
   m_ClearDepth: 1
   m_AllowXRRendering: 1
-  m_AllowHDROutput: 0
+  m_AllowHDROutput: 1
   m_UseScreenCoordOverride: 0
   m_ScreenSizeOverride: {x: 0, y: 0, z: 0, w: 0}
   m_ScreenCoordScaleBias: {x: 0, y: 0, z: 0, w: 0}
@@ -6874,8 +6888,8 @@ Camera:
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
-  m_HDR: 0
-  m_AllowMSAA: 0
+  m_HDR: 1
+  m_AllowMSAA: 1
   m_AllowDynamicResolution: 0
   m_ForceIntoRT: 0
   m_OcclusionCulling: 1
@@ -7241,12 +7255,6 @@ MonoBehaviour:
   - 0
   - 0
   - -5
-  _thumbHitGrabRotation: {x: 10, y: -10, z: -10}
-  _fingersHitGrabRotation: {x: 0, y: 0, z: -10}
-  _thumbNonHitGrabRotation: {x: 40, y: -20, z: -10}
-  _fingersNonHitGrabRotation: {x: 90, y: 45, z: 45}
-  _thumbIdleRotation: {x: 40, y: -20, z: -10}
-  _fingersIdleRotation: {x: 0, y: 30, z: 30}
   _rotations: {fileID: 11400000, guid: a3019000fdc2d824f98010908514f8b6, type: 2}
   _triggerTouch: {fileID: -5458004438013112472, guid: 7bd14a6082be6be4bad0a11dcbe18252,
     type: 3}
@@ -7597,28 +7605,28 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 16505616}
-        m_TargetAssemblyTypeName: DefaultNamespace.ObjectivesManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: UnityEcho.Objectives.ObjectivesManager, UnityEcho.Objectives
         m_MethodName: CompleteObjective
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: b0ef8f01f6754954e82be431c83b1bc7,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: DefaultNamespace.ObjectiveDefinition,
-            Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: UnityEcho.Objectives.ObjectiveDefinition,
+            UnityEcho.Objectives
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 16505616}
-        m_TargetAssemblyTypeName: DefaultNamespace.ObjectivesManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: UnityEcho.Objectives.ObjectivesManager, UnityEcho.Objectives
         m_MethodName: StartObjective
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: 5cb17388f19c7a142b646f2815e69505,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: DefaultNamespace.ObjectiveDefinition,
-            Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: UnityEcho.Objectives.ObjectiveDefinition,
+            UnityEcho.Objectives
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -21794,14 +21802,14 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 16505616}
-        m_TargetAssemblyTypeName: DefaultNamespace.ObjectivesManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: UnityEcho.Objectives.ObjectivesManager, UnityEcho.Objectives
         m_MethodName: StartObjective
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: a2409f3df06c0c24c8d862145f69f4db,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: DefaultNamespace.ObjectiveDefinition,
-            Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: UnityEcho.Objectives.ObjectiveDefinition,
+            UnityEcho.Objectives
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -22777,28 +22785,28 @@ MonoBehaviour:
     m_PersistentCalls:
       m_Calls:
       - m_Target: {fileID: 16505616}
-        m_TargetAssemblyTypeName: DefaultNamespace.ObjectivesManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: UnityEcho.Objectives.ObjectivesManager, UnityEcho.Objectives
         m_MethodName: CompleteObjective
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: a2409f3df06c0c24c8d862145f69f4db,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: DefaultNamespace.ObjectiveDefinition,
-            Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: UnityEcho.Objectives.ObjectiveDefinition,
+            UnityEcho.Objectives
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
       - m_Target: {fileID: 16505616}
-        m_TargetAssemblyTypeName: DefaultNamespace.ObjectivesManager, Assembly-CSharp
+        m_TargetAssemblyTypeName: UnityEcho.Objectives.ObjectivesManager, UnityEcho.Objectives
         m_MethodName: StartObjective
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 11400000, guid: e491e756b5578b6458e763f054ba52d8,
             type: 2}
-          m_ObjectArgumentAssemblyTypeName: DefaultNamespace.ObjectiveDefinition,
-            Assembly-CSharp
+          m_ObjectArgumentAssemblyTypeName: UnityEcho.Objectives.ObjectiveDefinition,
+            UnityEcho.Objectives
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -25416,7 +25424,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 3
   m_UsePipelineSettings: 0
-  m_AdditionalLightsShadowResolutionTier: 2
+  m_AdditionalLightsShadowResolutionTier: 1
   m_LightLayerMask: 1
   m_RenderingLayers: 1
   m_CustomShadowLayers: 0
@@ -25444,7 +25452,7 @@ Light:
   m_CookieSize: 10
   m_Shadows:
     m_Type: 2
-    m_Resolution: -1
+    m_Resolution: 128
     m_CustomResolution: -1
     m_Strength: 1
     m_Bias: 0
@@ -29588,7 +29596,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 70b73a2c97082154db7d1cafd1e35335, type: 3}
+  m_Sprite: {fileID: 21300000, guid: f72dc6c6fd4d8e247a32e8fdb05533f9, type: 3}
   m_Type: 3
   m_PreserveAspect: 0
   m_FillCenter: 1
@@ -31612,12 +31620,6 @@ MonoBehaviour:
   - 0
   - 0
   - -5
-  _thumbHitGrabRotation: {x: 10, y: -10, z: -10}
-  _fingersHitGrabRotation: {x: 0, y: 0, z: -10}
-  _thumbNonHitGrabRotation: {x: 40, y: -20, z: -10}
-  _fingersNonHitGrabRotation: {x: 90, y: 45, z: 45}
-  _thumbIdleRotation: {x: 40, y: -20, z: -10}
-  _fingersIdleRotation: {x: 0, y: 30, z: 30}
   _rotations: {fileID: 11400000, guid: a3019000fdc2d824f98010908514f8b6, type: 2}
   _triggerTouch: {fileID: -5458004438013112472, guid: 7bd14a6082be6be4bad0a11dcbe18252,
     type: 3}
@@ -45218,6 +45220,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 352478057030830986, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 352478057030830986, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 352478057030830986, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 449100079027329568, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
         type: 3}
       propertyPath: _head
@@ -45262,6 +45279,11 @@ PrefabInstance:
         type: 3}
       propertyPath: _onOpen.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 880436042602288301, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 905096721774112694, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
         type: 3}
@@ -45361,6 +45383,61 @@ PrefabInstance:
     - target: {fileID: 3804448600519312195, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
         type: 3}
       propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3835071628752857508, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3835071628752857508, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3835071628752857508, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3835071628752857508, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3835071628752857508, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462633635541468034, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchorMax.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462633635541468034, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchorMin.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462633635541468034, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_SizeDelta.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462633635541468034, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_SizeDelta.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462633635541468034, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4462633635541468034, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchoredPosition.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 4534347954544683168, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
@@ -45646,6 +45723,16 @@ PrefabInstance:
     - target: {fileID: 7251116444497863499, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
         type: 3}
       propertyPath: m_AnchoredPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409235194359445128, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchorMax.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7409235194359445128, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,
+        type: 3}
+      propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7814146122047592623, guid: b5d5e75440af1774b8b7fb5b0dc9e58b,

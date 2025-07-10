@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 790eeb17e50e4d5b954bb30772031c01, type: 3}
   m_Name: Restore Power
   m_EditorClassIdentifier: 
-  _objective: '- I should bring the battery and restore power to the door controls'
+  _objective: '- I should bring the battery back and restore power'

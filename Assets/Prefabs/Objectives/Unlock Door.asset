@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 790eeb17e50e4d5b954bb30772031c01, type: 3}
   m_Name: Unlock Door
   m_EditorClassIdentifier: 
-  _objective: '- The code is 0451, I should unlock the door with it'
+  _objective: '- The code is 0451, I should unlock the door'

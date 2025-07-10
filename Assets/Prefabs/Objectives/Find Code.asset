@@ -12,4 +12,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 790eeb17e50e4d5b954bb30772031c01, type: 3}
   m_Name: Find Code
   m_EditorClassIdentifier: 
-  _objective: '- I need to find a code to unlock the door'
+  _objective: '- I need to find the door code'
