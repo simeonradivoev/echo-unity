@@ -14,6 +14,8 @@ namespace UnityEcho.Mechanics.Utils
     public struct GrabContext
     {
         public bool Left;
+
+        public Vector3 Position;
     }
 
     public interface IReleaseHandler

@@ -11,6 +11,11 @@ ScriptedImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Asteroid
+    second: {fileID: 2100000, guid: cbd653f31272207428ff0ab38fa2f249, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: DarWall
     second: {fileID: 2100000, guid: ef2d174568ccdd8439c123c81836e2e6, type: 2}
   - first:
@@ -21,8 +26,18 @@ ScriptedImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Default
+    second: {fileID: 2100000, guid: 31321ba15b8f8eb4c954353edc038b1d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Door
     second: {fileID: 2100000, guid: b950f9e4a44fdab4191df50ae5983d09, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Exterior Window
+    second: {fileID: 2100000, guid: ce625b4f3436aad4cb1693ddd60b7853, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -38,6 +53,16 @@ ScriptedImporter:
       assembly: UnityEngine.CoreModule
       name: Light
     second: {fileID: 2100000, guid: 264be0cb463d25e4880bb905d5c88faf, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Light Red
+    second: {fileID: 2100000, guid: 12809d44492559846876ec0ef370107b, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Material_0
+    second: {fileID: 2100000, guid: da80a6a5078750946b0ea3dedef27fb1, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -67,51 +92,45 @@ ScriptedImporter:
   _animationLoopTime: 1
   _animationLoopPose: 0
   _importMaterials: 1
-  _enableGpuInstancing: 0
+  _enableGpuInstancing: 1
   _useSceneNameIdentifier: 1
   _textureCompression: -50
   optimizeGameObjects: 0
   materials:
-  - {fileID: -7098565394360792512, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: -8771166627424403242, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
   - {fileID: 1741209797510602166, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
-  - {fileID: -9007632685173550870, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
-  - {fileID: -8848810374240701247, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
   - {fileID: 1788269377728665300, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
-  - {fileID: -5893160060819351940, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: 1757029478229488260, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: -3476492683474047313, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: -7098565394360792512, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: -9007632685173550870, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: -4538894906728730785, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: -8848810374240701247, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
   - {fileID: 8556262120643298411, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
-  textures:
-  - {fileID: -3335217333795423520, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
-  - {fileID: 4987734965063691412, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  - {fileID: -5893160060819351940, guid: 8fa226ea66b73684088f97714f177c1f, type: 3}
+  textures: []
   hasSceneData: 1
   hasAnimationData: 0
   hasMaterialData: 1
-  hasTextureData: 1
+  hasTextureData: 0
   animations: []
   _extensions:
-  - name: KHR_lights_punctual
-    supported: 1
-    used: 1
-    required: 1
   - name: KHR_materials_emissive_strength
     supported: 1
     used: 1
     required: 0
-  _textures:
-  - texture: {fileID: -3335217333795423520, guid: 8fa226ea66b73684088f97714f177c1f,
-      type: 3}
-    shouldBeLinear: 0
-    shouldBeNormalMap: 0
-  - texture: {fileID: 4987734965063691412, guid: 8fa226ea66b73684088f97714f177c1f,
-      type: 3}
-    shouldBeLinear: 0
-    shouldBeNormalMap: 0
-  - texture: {fileID: 4987734965063691412, guid: 8fa226ea66b73684088f97714f177c1f,
-      type: 3}
-    shouldBeLinear: 0
-    shouldBeNormalMap: 0
-  - texture: {fileID: 4987734965063691412, guid: 8fa226ea66b73684088f97714f177c1f,
-      type: 3}
-    shouldBeLinear: 0
-    shouldBeNormalMap: 0
+  - name: KHR_lights_punctual
+    supported: 1
+    used: 1
+    required: 1
+  - name: EXT_mesh_gpu_instancing
+    supported: 1
+    used: 1
+    required: 0
+  _textures: []
   _mainAssetIdentifier: scenes/Scene
-  _importPlugins: []
+  _importPlugins:
+  - typeName: UnityGLTF.Plugins.GPUInstancingImport
+    overrideEnabled: 0
+    enabled: 0
+    jsonSettings: 

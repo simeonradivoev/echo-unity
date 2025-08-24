@@ -1,10 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Unity.Mathematics;
 using UnityEngine;
-using UnityEngine.InputSystem.XR;
 using UnityEngine.XR;
-using InputDevice = UnityEngine.InputSystem.InputDevice;
 
 namespace UnityEcho.Mechanics
 {
@@ -75,6 +72,9 @@ namespace UnityEcho.Mechanics
         [SerializeField]
         private Transform _rightFingerPointer;
 
+        [SerializeField]
+        private float _headLookOffset;
+
         private readonly Vector3[] _fingerOffset = new Vector3[2];
 
         private readonly Vector3[] _handPositions = new Vector3[2];
@@ -89,11 +89,17 @@ namespace UnityEcho.Mechanics
 
         private bool2 _connected;
 
+        private float _elbowSwivelPercentSmooth;
+
+        private float _lastSwivelAngleVel;
+
         private ShoulderPlaneDefinition _shoulderPlane;
 
         public Vector3 TorsoDirection { get; private set; } = Vector3.forward;
 
         public Animator Animator { get; private set; }
+
+        public Rigidbody Body => _body;
 
         private void Start()
         {
@@ -103,9 +109,7 @@ namespace UnityEcho.Mechanics
 
         private void Update()
         {
-            var headDirection = _head.forward;
-            headDirection.y = 0;
-            headDirection = Vector3.Normalize(headDirection);
+            var headDirection = Vector3.ProjectOnPlane(_head.forward, _body.rotation * Vector3.up).normalized;
             var leftArmDir = _leftHand.transform.position - _head.position;
             leftArmDir.y = 0;
             if (!_connected[0])
@@ -139,22 +143,12 @@ namespace UnityEcho.Mechanics
             GetRawValues();
 
             // Need to be done in late update otherwise it stutters
-            var headBoneOffset = _head.position - _headBone.position;
-            transform.position += headBoneOffset;
-            transform.rotation = Quaternion.LookRotation(TorsoDirection);
+            //var headBoneOffset = _head.position - _headBone.position;
+            //transform.position += headBoneOffset;
+            //transform.rotation = Quaternion.LookRotation(TorsoDirection, _body.rotation * Vector3.up);
 
             UpdateHandIk(AvatarIKGoal.LeftHand, _leftHand, _leftHandControllerReference, Quaternion.Euler(_leftHandCollisionRotationOffset));
             UpdateHandIk(AvatarIKGoal.RightHand, _rightHand, _rightHandControllerReference, Quaternion.Euler(_rightHandCollisionRotationOffset));
-
-            if (XRController.leftHand != null)
-            {
-                OnMove?.Invoke(XRController.leftHand, _leftFingerPointer.position, _leftHand.RawRotation);
-            }
-
-            if (XRController.rightHand != null)
-            {
-                OnMove?.Invoke(XRController.rightHand, _rightFingerPointer.position, _rightHand.RawRotation);
-            }
         }
 
         private void OnAnimatorIK(int layerIndex)
@@ -173,7 +167,7 @@ namespace UnityEcho.Mechanics
             Animator.SetIKRotation(AvatarIKGoal.LeftHand, _handRotations[0]);
             Animator.SetIKRotation(AvatarIKGoal.RightHand, _handRotations[1]);
 
-            Animator.SetLookAtPosition(_head.position + _head.forward);
+            Animator.SetLookAtPosition(_head.position + TorsoDirection * _headLookOffset);
             Animator.SetLookAtWeight(_headWeight, _bodyWeight);
 
             UpdateShoulderPos(HumanBodyBones.LeftShoulder, HumanBodyBones.LeftUpperArm, _handPositions[0], out var leftArmHeight);
@@ -182,8 +176,6 @@ namespace UnityEcho.Mechanics
             UpdateElbowSwivel(HumanBodyBones.LeftShoulder, AvatarIKHint.LeftElbow, Vector3.forward, Vector3.left, _leftHand, leftArmHeight);
             UpdateElbowSwivel(HumanBodyBones.RightShoulder, AvatarIKHint.RightElbow, Vector3.back, Vector3.right, _rightHand, rightArmHeight);
         }
-
-        public static event Action<InputDevice, Vector3, Quaternion> OnMove;
 
         private void UpdateElbowSwivel(
             HumanBodyBones shoulder,
@@ -205,7 +197,8 @@ namespace UnityEcho.Mechanics
             var elbowSwivelPercent = Quaternion.Angle(
                 Quaternion.LookRotation(hand.transform.TransformDirection(hand.GrabDirection), up),
                 Quaternion.LookRotation(headSpace.MultiplyVector(Vector3.down), up));
-            var elbowSwivelAngle = _elbowRotationMap.Evaluate(elbowSwivelPercent);
+            _elbowSwivelPercentSmooth = Mathf.SmoothDampAngle(_elbowSwivelPercentSmooth, elbowSwivelPercent, ref _lastSwivelAngleVel, Time.deltaTime);
+            var elbowSwivelAngle = _elbowRotationMap.Evaluate(_elbowSwivelPercentSmooth);
             var elbowDir = headSpace.MultiplyVector(Quaternion.AngleAxis(elbowSwivelAngle, rotationDirection) * Vector3.down);
             var hintPosition = Vector3.Slerp(
                 shoulderTransform.position + headSpace.MultiplyVector(Vector3.down * 0.4f + Vector3.back * 0.4f + side * 0.4f),
@@ -327,16 +320,12 @@ namespace UnityEcho.Mechanics
                         rotation,
                         Vector3.one);
                 }
-                else if (hand.VirtualGrab)
+                else
                 {
                     space = Matrix4x4.TRS(
                         hand.GrabData.GrabHit.Collider.transform.TransformPoint(hand.GrabData.GrabHit.LocalPosition),
                         rotation,
                         Vector3.one);
-                }
-                else
-                {
-                    space = Matrix4x4.TRS(hand.GrabData.GrabHit.Position, rotation, Vector3.one);
                 }
             }
             else

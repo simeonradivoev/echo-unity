@@ -25,7 +25,7 @@ namespace UnityEcho.Interactables
         private MoveEvent _move;
 
         [SerializeField]
-        private bool _interactible = true;
+        private bool _interactable = true;
 
         [SerializeField]
         private UnityEvent _off;
@@ -37,12 +37,12 @@ namespace UnityEcho.Interactables
 
         private float _lastAngle;
 
-        private bool _lastInteractible;
+        private bool _lastInteractable;
 
-        public bool Iteractible
+        public bool IsInteractable
         {
-            get => _interactible;
-            set => _interactible = value;
+            get => _interactable;
+            set => _interactable = value;
         }
 
         private void Awake()
@@ -80,17 +80,17 @@ namespace UnityEcho.Interactables
         private void Reset()
         {
             _joint = GetComponentInChildren<HingeJoint>();
-            _lastInteractible = _interactible;
+            _lastInteractable = _interactable;
         }
 
         private void Update()
         {
-            if (!Mathf.Approximately(_lastAngle, _joint.angle) || _lastInteractible != _interactible)
+            if (!Mathf.Approximately(_lastAngle, _joint.angle) || _lastInteractable != _interactable)
             {
                 UpdateLastAngle(_joint.angle);
                 UpdateNormalized(_lastAngle);
 
-                _lastInteractible = _interactible;
+                _lastInteractable = _interactable;
             }
         }
 
@@ -102,12 +102,12 @@ namespace UnityEcho.Interactables
             var minReached = _invert ? angle > max : angle < min;
             var maxReached = _invert ? angle < min : angle > max;
 
-            if ((!_interactible || minReached) && _isOn)
+            if ((!_interactable || minReached) && _isOn)
             {
                 _off.Invoke();
                 _isOn = false;
             }
-            else if (_interactible && maxReached && !_isOn)
+            else if (_interactable && maxReached && !_isOn)
             {
                 _on.Invoke();
                 _isOn = true;

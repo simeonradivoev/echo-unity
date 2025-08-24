@@ -1,5 +1,4 @@
-﻿using UnityEcho.Objectives;
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.EventSystems;
 using UnityEngine.InputSystem.UI;
@@ -29,15 +28,7 @@ namespace UnityEcho.UI
         [SerializeField]
         private float _performDuration = 0.1f;
 
-        [SerializeField]
-        private UnityEvent _onObjectiveNotification;
-
-        [SerializeField]
-        private UnityEvent _onObjectiveNotificationDissmiss;
-
         private bool _dragging;
-
-        private ObjectivesManager _objectivesManager;
 
         private bool _performed;
 
@@ -47,14 +38,11 @@ namespace UnityEcho.UI
 
         private float _velocity;
 
+        public UnityEvent OnPerformed => _onPerformed;
+
         private void Start()
         {
             _rectTransform = GetComponent<RectTransform>();
-            _objectivesManager = FindObjectOfType<ObjectivesManager>();
-            if (_objectivesManager)
-            {
-                _objectivesManager.OnObjectiveStarted.AddListener(OnObjectiveStarted);
-            }
         }
 
         private void Update()
@@ -72,14 +60,6 @@ namespace UnityEcho.UI
             anchoredPosition.x = Mathf.Clamp(anchoredPosition.x - _velocity, 0, parentWidth);
             _rectTransform.anchoredPosition = anchoredPosition;
             _reset = anchoredPosition.x <= 0;
-        }
-
-        private void OnDestroy()
-        {
-            if (_objectivesManager)
-            {
-                _objectivesManager.OnObjectiveStarted.RemoveListener(OnObjectiveStarted);
-            }
         }
 
         #region Implementation of IBeginDragHandler
@@ -155,15 +135,5 @@ namespace UnityEcho.UI
         }
 
         #endregion
-
-        private void OnObjectiveStarted()
-        {
-            _onObjectiveNotification.Invoke();
-        }
-
-        public void DismissNotification()
-        {
-            _onObjectiveNotificationDissmiss.Invoke();
-        }
     }
 }

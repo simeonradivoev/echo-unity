@@ -24,12 +24,13 @@ namespace UnityEngine.InputSystem.UI
     /// component found there but for 3D raycasting necessary for
     /// tracked devices, this component is required.
     /// </remarks>
-    [RequireComponent(typeof(Canvas))]
     public class XRTrackedDeviceRaycasater : BaseRaycaster
     {
         internal static InlinedArray<XRTrackedDeviceRaycasater> s_Instances;
 
         private static readonly List<RaycastHitData> s_SortedGraphics = new();
+
+        private static readonly Vector3[] _cornersTmp = new Vector3[4];
 
         [FormerlySerializedAs("ignoreReversedGraphics")]
         [SerializeField]
@@ -147,7 +148,11 @@ namespace UnityEngine.InputSystem.UI
             }
         }
 
-        private void PerformRaycast(Vector3 worldPosition, Vector3 direction, List<RaycastResult> resultAppendList)
+        private void PerformRaycast(
+            XRExtendedPointerEventData pointerEventData,
+            Vector3 worldPosition,
+            Vector3 direction,
+            List<RaycastResult> resultAppendList)
         {
             var ray = new Ray(worldPosition, direction);
             var hitDistance = m_MaxDistance;
@@ -157,16 +162,6 @@ namespace UnityEngine.InputSystem.UI
             {
                 if (Physics.Raycast(ray, out var hit, maxDistance: hitDistance, layerMask: m_BlockingMask))
                     hitDistance = hit.distance;
-            }
-#endif
-
-#if UNITY_INPUT_SYSTEM_ENABLE_PHYSICS2D
-            if (m_CheckFor2DOcclusion)
-            {
-                var raycastDistance = hitDistance;
-                var hits = Physics2D.GetRayIntersection(ray, raycastDistance, m_BlockingMask);
-                if (hits.collider != null)
-                    hitDistance = hits.distance;
             }
 #endif
 
@@ -188,13 +183,19 @@ namespace UnityEngine.InputSystem.UI
                     validHit = Vector3.Dot(forward, goDirection) > 0;
                 }
 
-                validHit &= hitData.distance < hitDistance;
+                ((RectTransform)hitData.graphic.transform).GetWorldCorners(_cornersTmp);
+                var canvasPlane = new Plane(_cornersTmp[0], _cornersTmp[1], _cornersTmp[2]);
+                var side = canvasPlane.GetSide(worldPosition);
+
+                // We want to count a release over an element if you go far back enough but still kinda pointing towards the element.
+                // So that we can press buttons by poking them fast, the callback still requires a raycast
+                if (side || !pointerEventData.pointerPress)
+                {
+                    validHit &= hitData.distance <= hitDistance;
+                }
 
                 if (validHit)
                 {
-                    var canvasPlane = new Plane(-hitData.graphic.transform.forward, hitData.graphic.transform.position);
-                    var side = canvasPlane.GetSide(worldPosition);
-
                     var castResult = new RaycastResult
                     {
                         gameObject = go,
@@ -213,22 +214,31 @@ namespace UnityEngine.InputSystem.UI
 
         internal void PerformRaycast(XRExtendedPointerEventData eventData, List<RaycastResult> resultAppendList)
         {
-            if (canvas == null)
-            {
-                return;
-            }
-
-            if (eventCamera == null)
+            if (canvas == null || !canvas.enabled || eventCamera == null || eventData.extension < 0.5f)
             {
                 return;
             }
 
             var worldPosition = eventData.trackedDevicePosition;
-            var canvasPlane = new Plane(-canvas.transform.forward, canvas.transform.position);
+            var lastWorldPosition = eventData.trackedDeviceLastPosition;
+
+            (canvas.transform as RectTransform).GetWorldCorners(_cornersTmp);
+
+            var canvasPlane = new Plane(_cornersTmp[0], _cornersTmp[1], _cornersTmp[2]);
+
+            if (!canvasPlane.SameSide(lastWorldPosition, worldPosition) && canvasPlane.GetSide(lastWorldPosition))
+            {
+                var dir = (worldPosition - lastWorldPosition).normalized;
+                if (canvasPlane.Raycast(new Ray(lastWorldPosition, dir), out var enter))
+                {
+                    worldPosition = lastWorldPosition + dir * (enter * 0.5f);
+                }
+            }
+
             var closestPoint = canvasPlane.ClosestPointOnPlane(worldPosition);
             var direction = Vector3.Normalize(closestPoint - worldPosition);
 
-            PerformRaycast(worldPosition, direction, resultAppendList);
+            PerformRaycast(eventData, worldPosition, direction, resultAppendList);
 
             if (_pressLagBehindDistance > 0 &&
                 eventData.pointerPressRaycast.module == this &&
@@ -251,7 +261,7 @@ namespace UnityEngine.InputSystem.UI
                 closestPoint = canvasPlane.ClosestPointOnPlane(worldPosition);
                 direction = Vector3.Normalize(closestPoint - worldPosition);
 
-                PerformRaycast(worldPosition, direction, resultAppendList);
+                PerformRaycast(eventData, worldPosition, direction, resultAppendList);
             }
         }
 
@@ -353,14 +363,6 @@ namespace UnityEngine.InputSystem.UI
 
         private struct RaycastHitData
         {
-            public Graphic graphic { get; }
-
-            public Vector3 worldHitPosition { get; }
-
-            public Vector2 screenPosition { get; }
-
-            public float distance { get; }
-
             public RaycastHitData(Graphic graphic, Vector3 worldHitPosition, Vector2 screenPosition, float distance)
             {
                 this.graphic = graphic;
@@ -368,6 +370,14 @@ namespace UnityEngine.InputSystem.UI
                 this.screenPosition = screenPosition;
                 this.distance = distance;
             }
+
+            public Graphic graphic { get; }
+
+            public Vector3 worldHitPosition { get; }
+
+            public Vector2 screenPosition { get; }
+
+            public float distance { get; }
         }
     }
 }

@@ -29,13 +29,7 @@ MonoBehaviour:
   m_Name: Standalone
   m_EditorClassIdentifier: 
   features:
-  - {fileID: 8103111495716844113}
-  - {fileID: 1836735671671499939}
-  - {fileID: 2077212213463208577}
-  - {fileID: -2511092176102346551}
-  - {fileID: 3006336019054634126}
   - {fileID: 6357870084255500176}
-  - {fileID: 917665148604701485}
   - {fileID: -4019889802376728133}
   - {fileID: -1310283486797430128}
   - {fileID: -6053339988778384510}
@@ -44,6 +38,12 @@ MonoBehaviour:
   - {fileID: -1139316751474802553}
   - {fileID: 360691612654834361}
   - {fileID: -8863886203539026681}
+  - {fileID: 8103111495716844113}
+  - {fileID: 1836735671671499939}
+  - {fileID: 2077212213463208577}
+  - {fileID: -2511092176102346551}
+  - {fileID: 3006336019054634126}
+  - {fileID: 917665148604701485}
   - {fileID: -3576223473113873178}
   - {fileID: 3598311110306934947}
   - {fileID: 286705085116805916}
@@ -129,7 +129,7 @@ MonoBehaviour:
   - {fileID: 7522799193504861738}
   m_renderMode: 1
   m_depthSubmissionMode: 0
-  m_symmetricProjection: 0
+  m_symmetricProjection: 1
 --- !u!114 &-6554647675761553281
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -427,7 +427,7 @@ MonoBehaviour:
   targetDevices:
   - visibleName: Quest
     manifestName: quest
-    enabled: 1
+    enabled: 0
   - visibleName: Quest 2
     manifestName: quest2
     enabled: 1
@@ -569,7 +569,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dfde4033cbc8045a69c465b226fd4284, type: 3}
   m_Name: DisplayUtilitiesFeature Standalone
   m_EditorClassIdentifier: 
-  m_enabled: 0
+  m_enabled: 1
   nameUi: 'Meta Quest: Display Utilities'
   version: 0.1.0
   featureIdInternal: com.unity.openxr.feature.meta-display-utilities

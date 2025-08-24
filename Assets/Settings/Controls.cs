@@ -56,21 +56,21 @@ public partial class @Controls: IInputActionCollection2, IDisposable
                 },
                 {
                     ""name"": ""GrabLeft"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""f7815381-bd72-4c66-9ab8-f42721335cfd"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": ""Analog"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""GrabRight"",
-                    ""type"": ""Button"",
+                    ""type"": ""Value"",
                     ""id"": ""764c3072-a69b-4b9d-8866-7e62979b4314"",
-                    ""expectedControlType"": ""Button"",
+                    ""expectedControlType"": ""Analog"",
                     ""processors"": """",
                     ""interactions"": """",
-                    ""initialStateCheck"": false
+                    ""initialStateCheck"": true
                 },
                 {
                     ""name"": ""Turn"",

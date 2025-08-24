@@ -186,7 +186,7 @@ namespace UnityEngine.InputSystem.UI
 
         private Action<InputAction.CallbackContext> m_OnTrackedDevicePositionDelegate;
 
-        private Action<InputDevice, Vector3, Quaternion> m_OnXRPointDelegate;
+        private HandIKController.MoveDelegate m_OnXRPointDelegate;
 
         // Index in this array maps to index in m_PointerStates. Separated out to make searching more efficient (we do a linear search).
         private InlinedArray<int> m_PointerIds;
@@ -1188,15 +1188,19 @@ namespace UnityEngine.InputSystem.UI
             {
                 var position = state.worldPosition;
                 var rotation = state.worldOrientation;
+                var lastPosition = state.lastWorldPosition;
 
                 if (m_XRTrackingOrigin != null)
                 {
                     position = m_XRTrackingOrigin.TransformPoint(position);
+                    lastPosition = m_XRTrackingOrigin.TransformPoint(lastPosition);
                     rotation = m_XRTrackingOrigin.rotation * rotation;
                 }
 
                 eventData.trackedDeviceOrientation = rotation;
                 eventData.trackedDevicePosition = position;
+                eventData.trackedDeviceLastPosition = lastPosition;
+                eventData.extension = state.extension;
             }
             else
             {
@@ -1231,7 +1235,11 @@ namespace UnityEngine.InputSystem.UI
                     eventData.distanceDelta = eventData.lastDistance - eventData.pointerCurrentRaycast.distance;
                     eventData.lastDistance = eventData.pointerCurrentRaycast.distance;
 
-                    if (state.leftButton.isPressed && eventData.pointerCurrentRaycast.distance > _pressThreshold + _pressThresholdLeeway)
+                    // allow the release if pointer if far back enough but still pointing toward the element
+                    // this allows for fast poking of buttons
+                    if (state.leftButton.isPressed &&
+                        (eventData.pointerCurrentRaycast.distance > _pressThreshold + _pressThresholdLeeway ||
+                         eventData.pointerCurrentRaycast.distance < -maxDistance))
                     {
                         OnClickCallback(ref state, false, false);
                     }
@@ -2870,7 +2878,7 @@ namespace UnityEngine.InputSystem.UI
             SetActionCallbacks(true);
         }
 
-        private void OnXRPointDelegate(InputDevice device, Vector3 position, Quaternion rotation)
+        private void OnXRPointDelegate(InputDevice device, Vector3 position, Quaternion rotation, float indexInput)
         {
             var index = GetPointerStateIndexFor(device);
             if (index == -1)
@@ -2881,6 +2889,7 @@ namespace UnityEngine.InputSystem.UI
             ref var state = ref GetPointerStateForIndex(index);
             state.worldPosition = position;
             state.worldOrientation = rotation;
+            state.extension = indexInput;
         }
 
         private void UnhookActions()
@@ -2906,11 +2915,11 @@ namespace UnityEngine.InputSystem.UI
             SetActionCallback(m_TrackedDevicePositionAction, m_OnTrackedDevicePositionDelegate, install);
             if (install)
             {
-                IKController.OnMove += m_OnXRPointDelegate;
+                HandIKController.OnMove += m_OnXRPointDelegate;
             }
             else
             {
-                IKController.OnMove -= m_OnXRPointDelegate;
+                HandIKController.OnMove -= m_OnXRPointDelegate;
             }
         }
 

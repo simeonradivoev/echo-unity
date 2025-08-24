@@ -16,8 +16,8 @@ MonoBehaviour:
   presetDescription: 
   files:
   - {fileID: 8300000, guid: cb9022efe44ecae4bb829541adfc80df, type: 3}
-  loopStart: 0.361
-  loopEnd: 1.476
+  loopStart: 0.1
+  loopEnd: 1.312
   bpm: 120
   relativeVolume: 0.6
   spatialize: 1
@@ -25,7 +25,7 @@ MonoBehaviour:
   priority: 128
   startingPitch: 1
   pitchShift: 0.05
-  loopMode: 0
+  loopMode: 2
   delay: 0
   ignoreTimeScale: 0
   maxPlayingInstances: 10

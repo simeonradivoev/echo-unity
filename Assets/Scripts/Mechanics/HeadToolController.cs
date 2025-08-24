@@ -1,6 +1,5 @@
 ﻿using UnityEngine;
 using UnityEngine.Events;
-using UnityEngine.InputSystem.XR;
 using InputDevice = UnityEngine.InputSystem.InputDevice;
 
 namespace UnityEcho.Mechanics
@@ -14,6 +13,9 @@ namespace UnityEcho.Mechanics
         private float _buttonPressDistance;
 
         [SerializeField]
+        private float _buttonPressAngle = 45f;
+
+        [SerializeField]
         private float _buttonReleaseDistance;
 
         [SerializeField]
@@ -23,80 +25,62 @@ namespace UnityEcho.Mechanics
         private float _buttonReleaseRadius;
 
         [SerializeField]
-        private Transform[] _buttons;
-
-        [SerializeField]
         private float _activateCooldown;
 
         [SerializeField]
-        private UnityEvent _onRightToolActivate;
+        private UnityEvent _onToolActivate;
 
         [SerializeField]
-        private UnityEvent _onRightToolDeActivate;
+        private UnityEvent _onToolDeActivate;
 
-        private readonly bool[] _active = new bool[2];
+        private bool _active;
 
-        private readonly bool[] _insideButton = new bool[2];
+        private bool _insideButton;
 
-        private readonly float[] _lastActivate = new float[2];
+        private float _lastActivate;
 
         private void Start()
         {
-            IKController.OnMove += IKControllerOnOnMove;
+            HandIKController.OnMove += IKControllerOnOnMove;
         }
 
         private void OnDestroy()
         {
-            IKController.OnMove -= IKControllerOnOnMove;
+            HandIKController.OnMove -= IKControllerOnOnMove;
         }
 
-        private void HandleButton(int buttonIndex, Vector3 fingerPosition, UnityEvent activateEvent, UnityEvent deactivateEvent)
+        private void IKControllerOnOnMove(InputDevice device, Vector3 position, Quaternion rotation, float extension)
         {
-            var button = _buttons[buttonIndex];
-            ref var inside = ref _insideButton[buttonIndex];
-            ref var isActive = ref _active[buttonIndex];
-            ref var lastActivate = ref _lastActivate[buttonIndex];
-
-            var plane = new Plane(button.forward, button.position);
-            var closestPoint = plane.ClosestPointOnPlane(fingerPosition);
-            var radiusToCenter = Vector3.Distance(closestPoint, button.position);
-            var distanceToPlane = plane.GetDistanceToPoint(fingerPosition);
-            var distance = inside ? _buttonReleaseDistance : _buttonPressDistance;
-            var radius = inside ? _buttonReleaseRadius : _buttonPressRadius;
-            var newInside = distanceToPlane <= distance && radiusToCenter <= radius;
-            if (!inside && newInside)
+            var plane = new Plane(transform.forward, transform.position);
+            var fingerForward = rotation * Vector3.forward;
+            var angle = Vector3.Angle(fingerForward, transform.up);
+            var closestPoint = plane.ClosestPointOnPlane(position);
+            var radiusToCenter = Vector3.Distance(closestPoint, transform.position);
+            var distanceToPlane = plane.GetDistanceToPoint(position);
+            var distance = _insideButton ? _buttonReleaseDistance : _buttonPressDistance;
+            var radius = _insideButton ? _buttonReleaseRadius : _buttonPressRadius;
+            var newInside = distanceToPlane <= distance && radiusToCenter <= radius && extension > 0.5f && angle <= _buttonPressAngle;
+            if (!_insideButton && newInside)
             {
-                inside = true;
-                if (Time.unscaledTime - lastActivate > _activateCooldown)
+                _insideButton = true;
+                if (Time.unscaledTime - _lastActivate > _activateCooldown)
                 {
-                    isActive = !isActive;
-                    if (isActive)
+                    _active = !_active;
+                    if (_active)
                     {
-                        activateEvent?.Invoke();
+                        _onToolActivate.Invoke();
                     }
                     else
                     {
-                        deactivateEvent?.Invoke();
+                        _onToolDeActivate.Invoke();
                     }
 
-                    lastActivate = Time.unscaledTime;
+                    _lastActivate = Time.unscaledTime;
                 }
             }
-            else if (inside != newInside)
+            else if (_insideButton != newInside)
             {
-                inside = false;
-            }
-        }
-
-        private void IKControllerOnOnMove(InputDevice device, Vector3 position, Quaternion rotation)
-        {
-            if (device == XRController.leftHand)
-            {
-                HandleButton(0, position, null, null);
-            }
-            else if (device == XRController.rightHand)
-            {
-                HandleButton(1, position, _onRightToolActivate, _onRightToolDeActivate);
+                _insideButton = false;
             }
         }
     }

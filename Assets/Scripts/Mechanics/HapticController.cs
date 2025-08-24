@@ -55,7 +55,7 @@ namespace UnityEcho.Mechanics
         private void Update()
         {
             // Player rigibody haptics
-            ProcessHaptics(
+            ProcessDeltaHaptics(
                 _grabMoveController.GrabData.PlayerBumpImpulse,
                 _grabMoveController.GrabData.PlayerBumpPos,
                 _hapticDuration,
@@ -73,7 +73,7 @@ namespace UnityEcho.Mechanics
         }
 
         // Stereo haptics based on the direction of the collision from the hand. So that a collision on the right will mainly trigger the right hand motor.
-        private void ProcessHaptics(Vector3 accumilated, Vector3 averagePoint, float duration, float multiplier, float cutoff, float forceScale)
+        private void ProcessDeltaHaptics(Vector3 accumilated, Vector3 averagePoint, float duration, float multiplier, float cutoff, float forceScale)
         {
             var bodyForward = Vector3.Dot(
                 Vector3.Normalize(averagePoint - _grabMoveController.Head.position),

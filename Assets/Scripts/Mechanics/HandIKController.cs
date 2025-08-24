@@ -15,6 +15,8 @@ namespace UnityEcho.Mechanics
 {
     public class HandIKController : MonoBehaviour
     {
+        public delegate void MoveDelegate(InputDevice device, Vector3 worldPosition, Quaternion rotation, float indexFingerValue);
+
         [SerializeField]
         private bool _leftHand;
 
@@ -40,8 +42,9 @@ namespace UnityEcho.Mechanics
         [SerializeField]
         private Vector3 _handRotationOffset;
 
+        [Header("References")]
         [SerializeField]
-        private Animator _animator;
+        private PlayerReferences _playerRefs;
 
         private readonly List<(Vector3, Color)> _debugIntersectionPoints = new();
 
@@ -82,7 +85,7 @@ namespace UnityEcho.Mechanics
             _intersectionPoints = new NativeHashSet<float3>(64, Allocator.Persistent);
 
             _grabMoveController = GetComponent<GrabMoveController>();
-            _ikConnector = _animator.GetComponent<IKConnector>();
+            _ikConnector = _playerRefs.Animator.GetComponent<IKConnector>();
 
             _start = (int)(_leftHand ? HumanBodyBones.LeftThumbProximal : HumanBodyBones.RightThumbProximal);
 
@@ -93,7 +96,7 @@ namespace UnityEcho.Mechanics
 
             for (var i = 0; i < 5; i++)
             {
-                _fingerDefinitions[i] = _animator.GetBoneTransform((HumanBodyBones)_start + i * 3).GetComponent<FingerDefinition>();
+                _fingerDefinitions[i] = _playerRefs.Animator.GetBoneTransform((HumanBodyBones)_start + i * 3).GetComponent<FingerDefinition>();
             }
 
             _ikConnector.AnimatorIK += IkConnectorOnAnimatorIK;
@@ -125,6 +128,22 @@ namespace UnityEcho.Mechanics
                     UpdateOffsetRotations(i == 0, _fingerDefinitions[i], (HumanBodyBones)_start + i * 3);
                 }
             }
+
+            if (Device != null)
+            {
+                foreach (var definition in _fingerDefinitions)
+                {
+                    if (definition.UIRay)
+                    {
+                        OnMove?.Invoke(
+                            Device,
+                            definition.UIRay.position,
+                            _grabMoveController.RawRotation,
+                            _grabMoveController.HasGrabbed ? 0 : 1 - _indexPointInputValue);
+                        break;
+                    }
+                }
+            }
         }
 
         private void OnDestroy()
@@ -144,6 +163,8 @@ namespace UnityEcho.Mechanics
                 Gizmos.DrawSphere(point.Item1, 0.01f);
             }
         }
+
+        public static event MoveDelegate OnMove;
 
         private void TriggerTouchOnPerformed(InputAction.CallbackContext obj)
         {
@@ -173,7 +194,7 @@ namespace UnityEcho.Mechanics
         {
             for (var i = 0; i < _fingerRotations.Length; i++)
             {
-                _animator.SetBoneLocalRotation((HumanBodyBones)_start + i, _fingerRotations[i]);
+                _playerRefs.Animator.SetBoneLocalRotation((HumanBodyBones)_start + i, _fingerRotations[i]);
             }
         }
 
@@ -184,7 +205,7 @@ namespace UnityEcho.Mechanics
             var curlAxis = fingerDefinition.FingerDiskDirection;
             var upAxis = fingerDefinition.FingerUpDirection;
             var rot = _rotations.GrabFingerHitRotations[fingerIndex];
-            var fingerTransform = _animator.GetBoneTransform(fingerBase);
+            var fingerTransform = _playerRefs.Animator.GetBoneTransform(fingerBase);
             var handTransform = fingerTransform.parent;
             var handFingerTransform = handTransform.localToWorldMatrix;
             var handFingerTransformInverse = handFingerTransform.inverse;

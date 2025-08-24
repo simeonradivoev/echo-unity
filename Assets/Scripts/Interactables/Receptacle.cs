@@ -17,13 +17,17 @@ namespace UnityEcho.Interactables
 
         private ReceptacleConnector _connector;
 
-        private bool _isActive;
-
         public bool IsInteractive
         {
             get => _isInteractive;
             set => _isInteractive = value;
         }
+
+        public bool IsActive { get; private set; }
+
+        public UnityEvent OnActivate => _onActivate;
+
+        public UnityEvent OnDeactivate => _onDeactivate;
 
         private void Start()
         {
@@ -34,7 +38,7 @@ namespace UnityEcho.Interactables
 
         private void OnDetach()
         {
-            if (_isActive)
+            if (IsActive)
             {
                 Deactivate();
             }
@@ -50,19 +54,19 @@ namespace UnityEcho.Interactables
 
         public void Deactivate()
         {
-            if (_isActive)
+            if (IsActive)
             {
+                IsActive = false;
                 _onDeactivate.Invoke();
-                _isActive = false;
             }
         }
 
         public void TryActivate()
         {
-            if (_connector.AttachedRigidbody && !_isActive)
+            if (_connector.AttachedRigidbody && !IsActive)
             {
+                IsActive = true;
                 _onActivate.Invoke();
-                _isActive = true;
             }
         }
     }

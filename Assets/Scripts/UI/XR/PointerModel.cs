@@ -24,6 +24,8 @@ namespace UnityEngine.InputSystem.UI
 
         public XRExtendedPointerEventData eventData;
 
+        private float m_Extension;
+
         private float m_AltitudeAngle;
 
         private float m_AzimuthAngle;
@@ -59,6 +61,21 @@ namespace UnityEngine.InputSystem.UI
             }
         }
 
+        public Vector3 lastWorldPosition { get; set; }
+
+        public float extension
+        {
+            get => m_Extension;
+            set
+            {
+                if (m_Extension != value)
+                {
+                    m_Extension = value;
+                    changedThisFrame = true;
+                }
+            }
+        }
+
         public Vector3 worldPosition
         {
             get => m_WorldPosition;
@@ -66,6 +83,7 @@ namespace UnityEngine.InputSystem.UI
             {
                 if (m_WorldPosition != value)
                 {
+                    lastWorldPosition = m_WorldPosition;
                     m_WorldPosition = value;
                     changedThisFrame = true;
                 }
@@ -187,6 +205,8 @@ namespace UnityEngine.InputSystem.UI
             m_AltitudeAngle = default;
             m_Twist = default;
             m_Radius = default;
+            m_Extension = default;
+            lastWorldPosition = default;
         }
 
         public void OnFrameFinished()

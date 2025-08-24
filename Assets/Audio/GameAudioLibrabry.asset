@@ -31,8 +31,13 @@ MonoBehaviour:
   - {fileID: 11400000, guid: fa09b1dfa180c9148a596baa7db6ea08, type: 2}
   - {fileID: 11400000, guid: b7acaae0c3e657340b3a522d719526fe, type: 2}
   - {fileID: 11400000, guid: 130be4a7ac39bb9419ba03771599c618, type: 2}
+  - {fileID: 11400000, guid: 2c156a0e848fde9448cf7fa27e885b1c, type: 2}
+  - {fileID: 11400000, guid: b6226ba5d18c439439621690ece92841, type: 2}
   Music:
   - {fileID: 11400000, guid: 65123dd773fd9484d8b1d70db9fd2985, type: 2}
+  - {fileID: 11400000, guid: c05c3d9b388e8de41b95dda555eebb57, type: 2}
+  - {fileID: 11400000, guid: 90f018b2fbfed5e4ea7b90f68a2c330f, type: 2}
+  - {fileID: 11400000, guid: 802dd7a689692614ba2498208fb60150, type: 2}
   useCustomNames: 0
   generatedName: GameAudioLibrabry
   musicEnum: 
@@ -52,6 +57,7 @@ MonoBehaviour:
     - {fileID: 11400000, guid: fa09b1dfa180c9148a596baa7db6ea08, type: 2}
     - {fileID: 11400000, guid: b7acaae0c3e657340b3a522d719526fe, type: 2}
     - {fileID: 11400000, guid: 130be4a7ac39bb9419ba03771599c618, type: 2}
+    - {fileID: 11400000, guid: 2c156a0e848fde9448cf7fa27e885b1c, type: 2}
     foldout: 1
   - name: UI
     files:
@@ -64,9 +70,13 @@ MonoBehaviour:
     files:
     - {fileID: 11400000, guid: 9eedf7aa3f3bbb647ab2e6ddfabe36e2, type: 2}
     - {fileID: 11400000, guid: 0751754893c044f459d8340be7140b76, type: 2}
+    - {fileID: 11400000, guid: b6226ba5d18c439439621690ece92841, type: 2}
     foldout: 1
   musicCategoriesToList:
   - name: 
     files:
     - {fileID: 11400000, guid: 65123dd773fd9484d8b1d70db9fd2985, type: 2}
+    - {fileID: 11400000, guid: c05c3d9b388e8de41b95dda555eebb57, type: 2}
+    - {fileID: 11400000, guid: 90f018b2fbfed5e4ea7b90f68a2c330f, type: 2}
+    - {fileID: 11400000, guid: 802dd7a689692614ba2498208fb60150, type: 2}
     foldout: 1

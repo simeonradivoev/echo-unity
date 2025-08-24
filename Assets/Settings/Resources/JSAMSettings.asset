@@ -27,11 +27,14 @@ MonoBehaviour:
   spatializeLateUpdate: 0
   spatializationMode: 0
   timeScaledSounds: 1
-  mixer: {fileID: 0}
-  masterGroup: {fileID: 0}
-  musicGroup: {fileID: 0}
-  soundGroup: {fileID: 0}
-  voiceGroup: {fileID: 0}
+  mixer: {fileID: 24100000, guid: 98b3bbedb9606c44ea9eff3056cfe0c7, type: 2}
+  masterGroup: {fileID: 24300002, guid: 98b3bbedb9606c44ea9eff3056cfe0c7, type: 2}
+  musicGroup: {fileID: -4537488917951320112, guid: 98b3bbedb9606c44ea9eff3056cfe0c7,
+    type: 2}
+  soundGroup: {fileID: 1149650432085455476, guid: 98b3bbedb9606c44ea9eff3056cfe0c7,
+    type: 2}
+  voiceGroup: {fileID: 2945406151125814078, guid: 98b3bbedb9606c44ea9eff3056cfe0c7,
+    type: 2}
   saveVolumeToPlayerPrefs: 1
   masterVolumeKey: JSAM_MASTER_VOL
   masterMutedKey: JSAM_MASTER_MUTE

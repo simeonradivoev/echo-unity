@@ -6,8 +6,17 @@
         Attach,
         DoorOpen,
         ChangeSound,
-        LeverPull
+        LeverPull,
+        SwitchToggle,
+        LeverClick,
+        LinearEndReach,
+        BatteryAttach,
+        EngineThrusters,
+        Flashlight
     }
     public enum GameAudioLibrabryMusic {
-        CylinderRoomMusic
+        CylinderRoomMusic,
+        BatteryMusic,
+        ExteriorMusic,
+        BridgeMusic
     }

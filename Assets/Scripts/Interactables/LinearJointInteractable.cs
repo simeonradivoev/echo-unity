@@ -36,18 +36,42 @@ namespace UnityEcho.Interactables
         [SerializeField]
         private UnityEvent _on;
 
-        private bool _isOn;
+        [SerializeField]
+        private bool _interactable;
+
+        private Rigidbody _jointRigidbody;
 
         private float _lastDiff;
+
+        public bool Interactable
+        {
+            get => _interactable;
+            set
+            {
+                _interactable = value;
+                _jointRigidbody.isKinematic = !value;
+            }
+        }
+
+        public bool IsOn { get; private set; }
+
+        public UnityEvent Off => _off;
+
+        public UnityEvent On => _on;
+
+        private void Awake()
+        {
+            _jointRigidbody = _joint.GetComponent<Rigidbody>();
+        }
 
         private void Start()
         {
             _lastDiff = GetDiff();
-            _isOn = _lastDiff <= -_joint.linearLimit.limit + _deadzone;
+            IsOn = _lastDiff <= -_joint.linearLimit.limit + _deadzone;
 
             if (_callbackOnStart)
             {
-                if (_isOn)
+                if (IsOn)
                 {
                     _on.Invoke();
                 }
@@ -74,28 +98,28 @@ namespace UnityEcho.Interactables
 
                 if (_oneSide)
                 {
-                    if (!_isOn && isOn)
+                    if (!IsOn && isOn)
                     {
+                        IsOn = true;
                         _on.Invoke();
-                        _isOn = true;
                     }
-                    else if (_isOn && !isOn)
+                    else if (IsOn && !isOn)
                     {
+                        IsOn = false;
                         _off.Invoke();
-                        _isOn = false;
                     }
                 }
                 else
                 {
-                    if (!_isOn && isOn)
+                    if (!IsOn && isOn)
                     {
+                        IsOn = true;
                         _on.Invoke();
-                        _isOn = true;
                     }
-                    else if (_isOn && isOff)
+                    else if (IsOn && isOff)
                     {
+                        IsOn = false;
                         _off.Invoke();
-                        _isOn = false;
                     }
                 }
 

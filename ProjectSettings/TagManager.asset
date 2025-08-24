@@ -9,6 +9,7 @@ TagManager:
   - TabletPanel
   - Battery
   - SmoothCamera
+  - PromoCamera
   layers:
   - Default
   - TransparentFX
@@ -19,8 +20,8 @@ TagManager:
   - Player
   - Mechanism
   - Static
-  - 
-  - 
+  - Exterior
+  - Volumes
   - 
   - 
   - 

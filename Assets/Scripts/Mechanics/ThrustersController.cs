@@ -23,9 +23,6 @@ namespace UnityEcho.Mechanics
 
         [Header("Referecnes")]
         [SerializeField]
-        private Transform _head;
-
-        [SerializeField]
         private Transform _forward;
 
         [SerializeField]
@@ -41,6 +38,8 @@ namespace UnityEcho.Mechanics
 
         private float _coolingSpeed;
 
+        private GrabMoveController _grabMoveController;
+
         private bool _overheated;
 
         private bool _wasThrusting;
@@ -52,6 +51,7 @@ namespace UnityEcho.Mechanics
             _action.action.Enable();
             _body = transform.parent.GetComponentInParent<Rigidbody>();
             _body.maxAngularVelocity = 0;
+            _grabMoveController = GetComponent<GrabMoveController>();
         }
 
         private void FixedUpdate()
@@ -78,7 +78,8 @@ namespace UnityEcho.Mechanics
                     var diff = dir * Mathf.Max(_trusterDesiredVelocity, _body.velocity.magnitude) - _body.velocity;
                     var force = Vector3.ClampMagnitude(diff, _maxTrusterForce) * Time.deltaTime;
 
-                    _body.AddForce(force, ForceMode.VelocityChange);
+                    //_body.AddForce(force, ForceMode.VelocityChange);
+                    _body.AddForceAtPosition(force, transform.position, ForceMode.VelocityChange);
                     Heat = Mathf.Min(1, Heat + _trusterHeatingRate * Time.deltaTime);
                     if (Heat >= 1)
                     {
@@ -110,7 +111,7 @@ namespace UnityEcho.Mechanics
 
         private Vector3 GetHandThrustersDirection()
         {
-            return _forward.forward;
+            return _grabMoveController.HandForward;
         }
     }
 }

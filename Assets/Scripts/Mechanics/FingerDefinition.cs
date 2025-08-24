@@ -22,6 +22,9 @@ namespace UnityEcho.Mechanics
         [SerializeField]
         private float _grabSpread;
 
+        [SerializeField]
+        private Transform _uiRay;
+
         public float MaxCurlAngle => _maxCurlAngle;
 
         public float CurlAngleRange => _curlAngleRange;
@@ -33,6 +36,8 @@ namespace UnityEcho.Mechanics
         public Vector3 FingerUpDirection => _fingerUpDirection;
 
         public float GrabSpread => _grabSpread;
+
+        public Transform UIRay => _uiRay;
 
         private void OnDrawGizmosSelected()
         {

@@ -372,10 +372,10 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: _interactible
+    attribute: _interactable
     path: BridgeLever
     classID: 114
-    script: {fileID: 11500000, guid: c039aa613f47445cb2c36dae18e244f4, type: 3}
+    script: {fileID: 11500000, guid: 0bb615b85d284d8ba95a4a937bf0b8ae, type: 3}
     flags: 0
   m_PPtrCurves: []
   m_SampleRate: 60
@@ -387,8 +387,8 @@ AnimationClip:
     genericBindings:
     - serializedVersion: 2
       path: 3260028978
-      attribute: 3354022548
-      script: {fileID: 11500000, guid: c039aa613f47445cb2c36dae18e244f4, type: 3}
+      attribute: 39746171
+      script: {fileID: 11500000, guid: 0bb615b85d284d8ba95a4a937bf0b8ae, type: 3}
       typeID: 114
       customType: 0
       isPPtrCurve: 0
@@ -870,10 +870,10 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    attribute: _interactible
+    attribute: _interactable
     path: BridgeLever
     classID: 114
-    script: {fileID: 11500000, guid: c039aa613f47445cb2c36dae18e244f4, type: 3}
+    script: {fileID: 11500000, guid: 0bb615b85d284d8ba95a4a937bf0b8ae, type: 3}
     flags: 0
   m_EulerEditorCurves: []
   m_HasGenericRootTransform: 0

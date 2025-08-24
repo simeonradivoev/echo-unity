@@ -9,6 +9,16 @@ namespace UnityEcho.UI.XR
         public Vector3 pressLocalPos;
 
         /// <summary>
+        /// Same as ExtendedPointerEventData but last value
+        /// </summary>
+        public Vector3 trackedDeviceLastPosition { get; set; }
+
+        /// <summary>
+        /// How much is the finger extended.
+        /// </summary>
+        public float extension { get; set; }
+
+        /// <summary>
         /// Don't lag behind anymore if press was far enough.
         /// </summary>
         public bool excapedPressLag { get; set; }

@@ -24,8 +24,28 @@ namespace UnityEcho.Mechanics.Utils
             lhs.swapBodies = rhs.swapBodies;
             lhs.axis = rhs.axis;
             lhs.massScale = rhs.massScale;
+            lhs.anchor = rhs.anchor;
             lhs.connectedMassScale = rhs.connectedMassScale;
+            lhs.enableCollision = rhs.enableCollision;
+            lhs.enablePreprocessing = rhs.enablePreprocessing;
             lhs.autoConfigureConnectedAnchor = rhs.autoConfigureConnectedAnchor;
+            lhs.targetPosition = rhs.targetPosition;
+            lhs.targetVelocity = rhs.targetVelocity;
+            lhs.targetAngularVelocity = rhs.targetAngularVelocity;
+            lhs.targetRotation = rhs.targetRotation;
+            lhs.rotationDriveMode = rhs.rotationDriveMode;
+            lhs.projectionAngle = rhs.projectionAngle;
+            lhs.projectionMode = rhs.projectionMode;
+            lhs.projectionDistance = rhs.projectionDistance;
+            lhs.configuredInWorldSpace = rhs.configuredInWorldSpace;
+            lhs.angularXLimitSpring = rhs.angularXLimitSpring;
+            lhs.lowAngularXLimit = rhs.lowAngularXLimit;
+            lhs.highAngularXLimit = rhs.highAngularXLimit;
+            lhs.angularYZLimitSpring = rhs.angularYZLimitSpring;
+            lhs.angularYLimit = rhs.angularYLimit;
+            lhs.angularZLimit = rhs.angularZLimit;
+            lhs.breakForce = rhs.breakForce;
+            lhs.breakTorque = rhs.breakTorque;
         }
     }
 }

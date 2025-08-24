@@ -10,7 +10,7 @@ namespace UnityEcho.UI
     public class TabletReleaseHandler : MonoBehaviour, IReleaseHandler, IGrabHandler
     {
         [SerializeField]
-        private Transform _head;
+        private PlayerReferences _playerRefs;
 
         [SerializeField]
         private InputActionReference _openInput;
@@ -60,6 +60,11 @@ namespace UnityEcho.UI
 
         public bool Enabled => _canvas.enabled;
 
+        private void Awake()
+        {
+            StoreLastPickup();
+        }
+
         private void Start()
         {
             _canvas = GetComponent<Canvas>();
@@ -69,7 +74,6 @@ namespace UnityEcho.UI
             _collider.enabled = _startOpen;
             _canvasGroup.alpha = _startOpen ? 1 : 0;
 
-            StoreLastPickup();
             _openInput.action.Enable();
             _openInput.action.performed += OnOpenPerformed;
         }
@@ -84,7 +88,7 @@ namespace UnityEcho.UI
             transform.localPosition += _velocity * Time.deltaTime;
             transform.localRotation *= Quaternion.Euler(_angularVelocity * Mathf.Rad2Deg * Time.deltaTime);
 
-            if ((transform.position - _head.position).magnitude >= _closeDistanceThreshold && _toggleTween == null)
+            if ((transform.position - _playerRefs.Head.position).magnitude >= _closeDistanceThreshold && _toggleTween == null)
             {
                 SetEnabled(false, 0.6f);
             }
@@ -151,7 +155,7 @@ namespace UnityEcho.UI
         {
             var neck = _controller.Animator.GetBoneTransform(HumanBodyBones.Neck);
 
-            if ((transform.position - _head.position).magnitude >= _closeDistanceThreshold)
+            if ((transform.position - _playerRefs.Head.position).magnitude >= _closeDistanceThreshold)
             {
                 // too far away we need to force it closer
                 transform.position = neck.position + _controller.TorsoDirection * _defaultDistance;
@@ -161,15 +165,17 @@ namespace UnityEcho.UI
             }
             else
             {
-                var angle = Vector3.Angle(_controller.TorsoDirection, _lastPickedUpChestDirection);
+                var localTorsoDirection = transform.parent.InverseTransformDirection(_controller.TorsoDirection);
+                var angle = Vector3.Angle(localTorsoDirection, _lastPickedUpChestDirection);
 
                 // We can just rotate by the offset, we don't need an entirely new position
                 if (angle > _maxRepositionAngle)
                 {
-                    var rotationOffset = Quaternion.LookRotation(_controller.TorsoDirection, Vector3.up) *
+                    var rotationOffset = Quaternion.LookRotation(localTorsoDirection, Vector3.up) *
                                          Quaternion.Inverse(Quaternion.LookRotation(_lastPickedUpChestDirection, Vector3.up));
 
-                    transform.localPosition = transform.parent.InverseTransformPoint(_head.position) + rotationOffset * _lastPickedUpPosition;
+                    var localHeadPosition = transform.parent.InverseTransformPoint(_playerRefs.Head.position);
+                    transform.localPosition = localHeadPosition + rotationOffset * _lastPickedUpPosition;
                     transform.localRotation = rotationOffset * _lastPickupRotation;
 
                     StoreLastPickup();
@@ -181,7 +187,7 @@ namespace UnityEcho.UI
         {
             if (!Enabled)
             {
-                transform.localPosition = transform.parent.InverseTransformPoint(_head.position) + _lastPickedUpPosition;
+                transform.localPosition = transform.parent.InverseTransformPoint(_playerRefs.Head.position) + _lastPickedUpPosition;
                 transform.localRotation = _lastPickupRotation;
 
                 Reposition();
@@ -218,9 +224,9 @@ namespace UnityEcho.UI
 
         private void StoreLastPickup()
         {
-            _lastPickedUpPosition = transform.localPosition - transform.parent.InverseTransformPoint(_head.position);
+            _lastPickedUpPosition = transform.localPosition - transform.parent.InverseTransformPoint(_playerRefs.Head.position);
             _lastPickupRotation = transform.localRotation;
-            _lastPickedUpChestDirection = _controller.TorsoDirection;
+            _lastPickedUpChestDirection = transform.parent.InverseTransformDirection(_controller.TorsoDirection);
         }
 
         #endregion

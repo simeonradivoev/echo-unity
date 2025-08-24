@@ -11,6 +11,12 @@ namespace UnityEcho.Mechanics
     /// </summary>
     public class StaticGrabDisableManager : MonoBehaviour
     {
+        [SerializeField]
+        private float _mainConnectedMass;
+
+        [SerializeField]
+        private float _secondaryConnectedMass;
+
         private readonly List<GrabMoveController> _staticActiveControllers = new();
 
         private GrabMoveController[] _allControllers;
@@ -46,7 +52,10 @@ namespace UnityEcho.Mechanics
         {
             for (var i = 0; i < _staticActiveControllers.Count; i++)
             {
-                _staticActiveControllers[i].StaticGrabJoint.SetActive(i == _staticActiveControllers.Count - 1);
+                var isLastOne = i == _staticActiveControllers.Count - 1;
+                var joint = _staticActiveControllers[i].StaticGrabJoint;
+                joint.connectedMassScale = isLastOne ? _mainConnectedMass : _secondaryConnectedMass;
+                _staticActiveControllers[i].Secondary = !isLastOne;
             }
         }
 

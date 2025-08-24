@@ -64,7 +64,7 @@ namespace UnityEcho.Utils
                 meshCollider.convex = convex;
             }
 
-            if (node.Extras?["static"]?.Value<bool>() ?? false)
+            if (node.Extras?["static"]?.Value<bool>() ?? node.Name.StartsWith("static_"))
             {
                 nodeObject.isStatic = true;
             }

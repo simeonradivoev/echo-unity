@@ -10,13 +10,7 @@ namespace UnityEcho.Mechanics
     public class TurnController : MonoBehaviour
     {
         [SerializeField]
-        private SphereCollider _headCollider;
-
-        [SerializeField]
-        private Transform _head;
-
-        [SerializeField]
-        private Transform _headSpace;
+        private PlayerReferences _references;
 
         [SerializeField]
         private InputActionReference _turnAction;
@@ -26,6 +20,11 @@ namespace UnityEcho.Mechanics
         private Rigidbody _rigidbody;
 
         private bool _turned;
+
+        private void Reset()
+        {
+            _references = GetComponent<PlayerReferences>();
+        }
 
         private void Start()
         {
@@ -54,27 +53,30 @@ namespace UnityEcho.Mechanics
                     desiredRot = Quaternion.AngleAxis(-45, Vector3.up);
                 }
 
+                var head = _references.Head;
+                var headCollider = _references.HeadCollider;
+
                 var rigidbodyPos = _rigidbody.position;
                 // we first rotate around head collider since that is safe
-                var headCenterOffset = _head.position - rigidbodyPos;
+                var headCenterOffset = head.position - rigidbodyPos;
                 var headCenterRotatedOffset = headCenterOffset - desiredRot * headCenterOffset;
-                _headSpace.transform.localRotation *= desiredRot;
-                _rigidbody.transform.position += headCenterRotatedOffset;
+                _references.HeadSpace.transform.localRotation *= desiredRot;
+                _rigidbody.position += headCenterRotatedOffset;
 
                 var hadOffCenter = CalculateCenter(out var offCenter);
                 if (hadOffCenter)
                 {
                     // then we calculate the offset relative to the grab center and do sweep test so we don't end up in a wall
-                    var relativePosition = offCenter - _head.position;
+                    var relativePosition = offCenter - head.position;
                     var headOffset = relativePosition - desiredRot * relativePosition;
                     var headOffsetMagnitude = headOffset.magnitude;
                     if (headOffsetMagnitude > 0)
                     {
                         var offset = headOffset;
 
-                        if (Physics.Raycast(_head.position, headOffset, out var hit, headOffsetMagnitude + _headCollider.radius))
+                        if (Physics.Raycast(head.position, headOffset, out var hit, headOffsetMagnitude + headCollider.radius))
                         {
-                            offset = Vector3.ClampMagnitude(headOffset, Mathf.Max(0, hit.distance - _headCollider.radius));
+                            offset = Vector3.ClampMagnitude(headOffset, Mathf.Max(0, hit.distance - headCollider.radius));
 
                             foreach (var grabController in _grabControllers)
                             {
@@ -90,7 +92,7 @@ namespace UnityEcho.Mechanics
                             offset = headOffset;
                         }
 
-                        _rigidbody.transform.position += offset;
+                        _rigidbody.position += offset;
                     }
                 }
 
@@ -111,13 +113,8 @@ namespace UnityEcho.Mechanics
 
             foreach (var grabController in _grabControllers)
             {
-                if (grabController.DynamicGrabJoint)
-                {
-                    averagePoint +=
-                        grabController.DynamicGrabJoint.connectedBody.transform.TransformPoint(grabController.DynamicGrabJoint.connectedAnchor);
-                    pointCount++;
-                }
-                else if (grabController.StaticGrabJoint)
+                // we only check static grabs as other types can cause the player to rotate through the level
+                if (grabController.StaticGrabJoint)
                 {
                     averagePoint += grabController.StaticGrabJoint.transform.position;
                     pointCount++;
@@ -126,7 +123,7 @@ namespace UnityEcho.Mechanics
 
             if (pointCount <= 0)
             {
-                center = _head.position;
+                center = _references.Head.position;
                 return false;
             }
 

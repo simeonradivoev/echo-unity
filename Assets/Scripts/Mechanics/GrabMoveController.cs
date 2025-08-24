@@ -6,9 +6,8 @@ using UnityEcho.Mechanics.Utils;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.InputSystem;
-using UnityEngine.InputSystem.XR;
+using UnityEngine.Serialization;
 using UnityEngine.XR;
-using InputDevice = UnityEngine.InputSystem.InputDevice;
 
 namespace UnityEcho.Mechanics
 {
@@ -49,6 +48,9 @@ namespace UnityEcho.Mechanics
         /// </summary>
         [SerializeField]
         private float _grabbedMassScale = 2;
+
+        [SerializeField]
+        private float _grabbedObjectMassScale = 2;
 
         /// <summary>
         /// This is for anchored objects like levers, This need to be higher then <see cref="_grabbedMassScale"/> but not by much, just high enough to make lever
@@ -94,9 +96,20 @@ namespace UnityEcho.Mechanics
         private float _grabGraceDuration = 0.2f;
 
         /// <summary>
+        /// Should dynamic objects not have their velocity set to 0 if they are released.
+        /// This is physically accurate but makes it very hard to suspend object in air without them drifting.
+        /// </summary>
+        [FormerlySerializedAs("_physicallyAccurateDynamicRelease")]
+        [SerializeField]
+        private bool _physicallyAccurateRelease;
+
+        /// <summary>
         /// This joint directly connects the attached static spot and the player body without going through the intermediate hand joint.
         /// </summary>
         [Header("References")]
+        [SerializeField]
+        private PlayerReferences _playerRefs;
+
         [SerializeField]
         private GameObject _staticGrabJointPrefab;
 
@@ -106,27 +119,20 @@ namespace UnityEcho.Mechanics
         [SerializeField]
         private GameObject _dynamicGrabJointPrefab;
 
-        /// <summary>
-        /// The head transform that is actually moved by the XR head node.
-        /// </summary>
         [SerializeField]
-        [Header("References")]
-        private Transform _head;
-
-        [SerializeField]
-        private Transform _headSpace;
-
-        /// <summary>
-        /// The root rigidbody of the player.
-        /// </summary>
-        [SerializeField]
-        private Rigidbody _body;
+        private ConfigurableJoint _headToDynamicJointPrefab;
 
         [SerializeField]
         private HeadFollower _headFollower;
 
         [SerializeField]
+        private Transform _forward;
+
+        [SerializeField]
         private InputActionReference _grabActionRef;
+
+        [SerializeField]
+        private AnimationCurve _releaseVelocityMultiplier;
 
         [SerializeField]
         private UnityEvent _onGrab;
@@ -152,6 +158,8 @@ namespace UnityEcho.Mechanics
         /// </summary>
         private Rigidbody _handRigidbody;
 
+        private bool _hasDynamicGrab;
+
         /// <summary>
         /// Raw angular velocity of controller
         /// </summary>
@@ -172,6 +180,18 @@ namespace UnityEcho.Mechanics
         /// </summary>
         private Vector3 _rawVelocity;
 
+        private Rigidbody _rootDynamicGrabBody;
+
+        private Quaternion _staticGrabHandOffset;
+
+        private Quaternion _staticGrabJointRotation;
+
+        private Quaternion _staticGrabRotation;
+
+        private Quaternion _staticGrabWorldHandRotation;
+
+        public Vector3 HandForward => _playerRefs.HeadSpace.transform.rotation * _rawRotation * _forward.localRotation * Vector3.forward;
+
         public float StaticGrabCooldown { get; set; }
 
         public Vector3 RawClampedWorldPosition { get; set; }
@@ -180,15 +200,15 @@ namespace UnityEcho.Mechanics
 
         public ConfigurableJoint DynamicGrabJoint { get; private set; }
 
-        public GameObject StaticGrabJoint { get; private set; }
+        public ConfigurableJoint StaticGrabJoint { get; private set; }
+
+        public bool Secondary { get; set; }
 
         public GameObject VirtualGrab { get; private set; }
 
         public bool HasGrabbed => StaticGrabJoint || DynamicGrabJoint || VirtualGrab;
 
-        public Transform Head => _head;
-
-        public InputDevice InputDevice => _leftHand ? XRController.leftHand : XRController.rightHand;
+        public Transform Head => _playerRefs.Head;
 
         public XRNode HandNode => _leftHand ? XRNode.LeftHand : XRNode.RightHand;
 
@@ -202,14 +222,28 @@ namespace UnityEcho.Mechanics
         /// </summary>
         public Vector3 ForwardDirection => _forwardDirection;
 
-        public Quaternion RawRotation => _headSpace.rotation * _rawRotation;
+        public Quaternion RawRotation => _playerRefs.HeadSpace.rotation * _rawRotation;
 
-        public Joint HeadToDynamicJoint { get; private set; }
+        public ConfigurableJoint HeadToDynamicJoint { get; private set; }
 
         /// <summary>
         /// Raw position of controller. This is in local space relative to the origin.
         /// </summary>
         public Vector3 RawPosition => _rawPosition;
+
+        /// <summary>
+        /// Should objects not have their velocity set to 0 if they are released.
+        /// This includes the player when they release from a static grab.
+        /// This is physically accurate but makes it very hard to suspend object in air without them drifting.
+        /// </summary>
+        public bool PhysicallyAccurateRelease { get; private set; }
+
+        private void Awake()
+        {
+            _handRigidbody = GetComponent<Rigidbody>();
+            _bodyCollisions = _playerRefs.Body.GetComponent<GrabbedCollisionEventsConnector>();
+            PhysicallyAccurateRelease = _physicallyAccurateRelease;
+        }
 
         private void Start()
         {
@@ -218,12 +252,15 @@ namespace UnityEcho.Mechanics
             _grabActionRef.action.started += GrabActionStarted;
             _grabActionRef.action.performed += GrabActionCanceledOrPerformed;
             _grabActionRef.action.canceled += GrabActionCanceledOrPerformed;
-            _handRigidbody = GetComponent<Rigidbody>();
-            HeadToDynamicJoint = GetComponent<Joint>();
-            HeadToDynamicJoint.connectedMassScale = _idleMassScale;
-            _bodyCollisions = _body.GetComponent<GrabbedCollisionEventsConnector>();
+
             _rawPosition = (_leftHand ? Vector3.left : Vector3.right) * 0.5f;
             RawClampedWorldPosition = transform.TransformPoint(_rawPosition);
+
+            HeadToDynamicJoint = _handRigidbody.gameObject.AddComponent<ConfigurableJoint>();
+            HeadToDynamicJoint.CopyJoint(_headToDynamicJointPrefab);
+            HeadToDynamicJoint.connectedBody = _playerRefs.Body;
+            HeadToDynamicJoint.connectedMassScale = _idleMassScale;
+            UpdateHandAnchor();
         }
 
         private void Update()
@@ -259,20 +296,30 @@ namespace UnityEcho.Mechanics
 
         private void OnDrawGizmos()
         {
-            var rawHandPos = _headSpace.TransformPoint(_rawPosition);
-            var rawHandRotation = _headSpace.rotation * _rawRotation;
+            var rawHandPos = _playerRefs.HeadSpace.TransformPoint(_rawPosition);
+            var rawHandRotation = _playerRefs.HeadSpace.rotation * _rawRotation;
             var dir = rawHandRotation * _grabDirection;
             Gizmos.color = Color.blue;
             Gizmos.DrawWireSphere(rawHandPos, _grabRadius);
+        }
+
+        public void SetPhysicallyAccurateRelease(bool enabled)
+        {
+            PhysicallyAccurateRelease = enabled;
+            if (HeadToDynamicJoint)
+            {
+                HeadToDynamicJoint.connectedMassScale = _idleMassScale;
+            }
         }
 
         private void UpdateGrabbedObjects()
         {
             if (VirtualGrab)
             {
-                var rotationOffset = _headSpace.rotation * _rawRotation * GrabData.GrabStartHandRotation;
+                var rotationOffset = _playerRefs.HeadSpace.rotation * _rawRotation * GrabData.GrabStartHandRotationInverse;
                 var rotation = rotationOffset * GrabData.GrabObjectStartRotation;
-                var constrainedHandPos = GrabData.HadPenetrationHit ? GrabData.PenetrationHit.point : _headSpace.TransformPoint(_rawPosition);
+                var constrainedHandPos =
+                    GrabData.HadPenetrationHit ? GrabData.PenetrationHit.point : _playerRefs.HeadSpace.TransformPoint(_rawPosition);
                 var position = GrabData.GrabHit.Collider.transform.TransformPoint(
                     GrabData.GrabHit.Collider.transform.InverseTransformPoint(constrainedHandPos) - GrabData.GrabHit.LocalPosition);
 
@@ -304,37 +351,74 @@ namespace UnityEcho.Mechanics
                 }
             }
 
-            if (playerBumpCount > 0)
-            {
-                GrabData.PlayerBumpPos /= playerBumpCount;
-            }
-
             if (StaticGrabJoint)
             {
-                var staticGrabJoint = StaticGrabJoint.GetComponent<ConfigurableJoint>();
-                staticGrabJoint.connectedAnchor = _headSpace.rotation * _rawPosition;
+                var attachedBody = StaticGrabJoint.GetComponent<Rigidbody>();
+                StaticGrabJoint.connectedAnchor =
+                    _playerRefs.Body.transform.InverseTransformPoint(_playerRefs.HeadSpace.transform.TransformPoint(_rawPosition));
 
-                var free = StaticGrabCooldown > 0 || playerBumpCount > 0;
+                if (attachedBody && attachedBody.isKinematic)
+                {
+                    // For kinematic objects, we need to update the axis to account for the object's rotation
+                    // Calculate how much the object has rotated since grab started
+                    var rotationDelta = attachedBody.rotation * Quaternion.Inverse(GrabData.GrabObjectStartRotation);
+
+                    // Calculate target rotation using the original coordinate system approach
+                    // but account for the kinematic object's rotation
+                    var currentHandWorldRotation = Quaternion.Inverse(rotationDelta) * _playerRefs.HeadSpace.rotation * _rawRotation;
+
+                    // Use the original joint rotation reference (not rotated)
+                    var currentHandInJointSpace = Quaternion.Inverse(rotationDelta * _staticGrabJointRotation) * currentHandWorldRotation;
+
+                    // Apply the rotation delta to the hand offset to account for object rotation
+                    _staticGrabHandOffset = Quaternion.Inverse(rotationDelta * _staticGrabJointRotation) * _staticGrabWorldHandRotation;
+
+                    var targetRot = Quaternion.Inverse(_staticGrabHandOffset) * currentHandInJointSpace;
+                    var correctedRot = new Quaternion(-targetRot.x, targetRot.y, targetRot.z, targetRot.w);
+
+                    // Apply the rotation delta to the final target rotation
+                    StaticGrabJoint.targetRotation = correctedRot;
+                }
+                else
+                {
+                    // Original logic for static objects
+                    _staticGrabRotation = attachedBody ? attachedBody.rotation : Quaternion.identity;
+
+                    var currentHandWorldRotation = _playerRefs.HeadSpace.rotation * _rawRotation;
+                    _staticGrabHandOffset = Quaternion.Inverse(_staticGrabJointRotation) * _staticGrabWorldHandRotation;
+                    var currentHandInJointSpace = Quaternion.Inverse(_staticGrabJointRotation) * currentHandWorldRotation;
+
+                    StaticGrabJoint.axis = Quaternion.Inverse(StaticGrabJoint.transform.rotation) * GrabData.Axis;
+                    StaticGrabJoint.secondaryAxis = Quaternion.Inverse(StaticGrabJoint.transform.rotation) * GrabData.SecondaryAxis;
+
+                    var targetRot = Quaternion.Inverse(_staticGrabHandOffset) * currentHandInJointSpace;
+                    var correctedRot = new Quaternion(-targetRot.x, targetRot.y, targetRot.z, targetRot.w);
+                    StaticGrabJoint.targetRotation = correctedRot;
+                }
+
+                var free = Secondary || StaticGrabCooldown > 0 || playerBumpCount > 0;
                 // We generally want locked hinge since that has the most responsiveness.
                 // We only want free when collisions happen so we don't glitch out the physics system.
-                staticGrabJoint.zMotion = free ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Locked;
-                staticGrabJoint.yMotion = free ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Locked;
-                staticGrabJoint.xMotion = free ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Locked;
+                StaticGrabJoint.zMotion = free ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Locked;
+                StaticGrabJoint.yMotion = free ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Locked;
+                StaticGrabJoint.xMotion = free ? ConfigurableJointMotion.Free : ConfigurableJointMotion.Locked;
 
-                if (staticGrabJoint.connectedBody == null && StaticGrabCooldown <= 0)
+                if (StaticGrabJoint.connectedBody == null && StaticGrabCooldown <= 0)
                 {
-                    var parent = staticGrabJoint.transform.parent;
+                    var parent = StaticGrabJoint.transform.parent;
                     DestroyImmediate(StaticGrabJoint);
 
                     // Static grabbing
-                    StaticGrabJoint = Instantiate(_staticGrabJointPrefab, GrabData.GrabHit.Position, Quaternion.identity, parent);
+                    StaticGrabJoint = Instantiate(_staticGrabJointPrefab, GrabData.GrabHit.Position, Quaternion.identity, parent)
+                        .GetComponent<ConfigurableJoint>();
                     StaticGrabJoint.name = $"{HandNode} Static Grab Joint";
                     var joint = StaticGrabJoint.GetComponent<ConfigurableJoint>();
-                    joint.anchor = StaticGrabJoint.transform.InverseTransformPoint(_headSpace.transform.TransformPoint(_rawPosition));
-                    joint.connectedAnchor = _body.transform.InverseTransformPoint(_headSpace.transform.TransformPoint(_rawPosition));
-                    joint.connectedBody = _body;
+                    joint.anchor = StaticGrabJoint.transform.InverseTransformPoint(_playerRefs.HeadSpace.transform.TransformPoint(_rawPosition));
+                    joint.connectedAnchor =
+                        _playerRefs.Body.transform.InverseTransformPoint(_playerRefs.HeadSpace.transform.TransformPoint(_rawPosition));
+                    joint.connectedBody = _playerRefs.Body;
                     // makes it a lot nicer if we stop the player immediately;
-                    _body.velocity = Vector3.zero;
+                    _playerRefs.Body.velocity = Vector3.zero;
                     GrabData.GrabObjectStartRotation = GrabData.GrabHit.Collider.transform.rotation;
                 }
             }
@@ -360,6 +444,9 @@ namespace UnityEcho.Mechanics
 
                 var grabObject = DynamicGrabJoint.connectedBody.GetComponent<GrabObject>();
 
+                var grabbedAnchoredMassScale = _grabbedAnchoredMassScale;
+                var idleMassScale = _idleMassScale;
+
                 // Don't let the player try too hard to go through a wall
                 if (collisions > 0 || hadKinematicBody || _bodyCollisions.Collisions.Count > 0)
                 {
@@ -367,78 +454,103 @@ namespace UnityEcho.Mechanics
                     if (hadKinematicBody)
                     {
                         // This most likely means a lever.
-                        DynamicGrabJoint.connectedMassScale = _grabbedAnchoredMassScale;
+                        DynamicGrabJoint.connectedMassScale = grabbedAnchoredMassScale;
                     }
                     else
                     {
-                        DynamicGrabJoint.connectedMassScale = _grabbedMassScale;
-                    }
-
-                    if (grabObject)
-                    {
-                        if (grabObject.ObjectMassScaleOverride.overrideState)
-                        {
-                            DynamicGrabJoint.massScale = grabObject.ObjectMassScaleOverride.value;
-                        }
-
-                        if (grabObject.HandMassScaleOverride.overrideState)
-                        {
-                            DynamicGrabJoint.connectedMassScale = grabObject.HandMassScaleOverride.value;
-                        }
-
-                        if (grabObject.PlayerMassScaleOverride.overrideState)
-                        {
-                            HeadToDynamicJoint.connectedMassScale = grabObject.PlayerMassScaleOverride.value;
-                        }
+                        DynamicGrabJoint.connectedMassScale = _grabbedObjectMassScale;
                     }
                 }
                 else
                 {
-                    HeadToDynamicJoint.connectedMassScale = _idleMassScale;
-                    DynamicGrabJoint.connectedMassScale = _idleMassScale;
+                    HeadToDynamicJoint.connectedMassScale = idleMassScale;
+                    DynamicGrabJoint.connectedMassScale = idleMassScale;
+                }
+
+                if (grabObject)
+                {
+                    if (grabObject.ObjectMassScaleOverride.overrideState)
+                    {
+                        DynamicGrabJoint.massScale = grabObject.ObjectMassScaleOverride.value;
+                    }
+
+                    if (grabObject.HandMassScaleOverride.overrideState)
+                    {
+                        DynamicGrabJoint.connectedMassScale = grabObject.HandMassScaleOverride.value;
+                    }
+
+                    if (grabObject.PlayerMassScaleOverride.overrideState)
+                    {
+                        HeadToDynamicJoint.connectedMassScale = grabObject.PlayerMassScaleOverride.value;
+                    }
                 }
 
                 if (collisions > 0)
                 {
                     GrabData.AveragePos /= collisions;
                 }
+
+                var rawWorldRotation = _playerRefs.HeadSpace.rotation * _rawRotation;
+                DynamicGrabJoint.targetRotation = rawWorldRotation * GrabData.GrabStartHandRotationInverse;
+            }
+            else if (_hasDynamicGrab)
+            {
+                // Dynamic grab was broken
+                HandleBrokenDynamicJoint();
             }
 
             StaticGrabCooldown = Mathf.Max(0, StaticGrabCooldown - Time.deltaTime);
+
+            if (playerBumpCount > 0)
+            {
+                GrabData.PlayerBumpPos /= playerBumpCount;
+            }
         }
 
         private void GrabActionStarted(InputAction.CallbackContext obj)
         {
-            if (obj.control.device == InputDevice)
-            {
-                _grabGraceTime = _grabGraceDuration;
-            }
+            _grabGraceTime = _grabGraceDuration;
         }
 
         private void GrabActionCanceledOrPerformed(InputAction.CallbackContext obj)
         {
-            if (obj.control.device == InputDevice)
-            {
-                HandleRelease();
-            }
+            HandleRelease();
         }
 
         public event Action<GrabHitData, GrabMoveController> Grabbed;
 
         public event Action<GrabMoveController> Released;
 
-        private void UpdateLocomotionVelocity()
+        private void UpdateStaticLocomotionVelocity(Rigidbody attachedRigidbody)
         {
-            //TODO: add velocity of held rigidbody if any
             // Since we do fixed joints and even if we don't setting velocity to exact controller velocity makes movement consistent.
-            _body.velocity = _headSpace.transform.TransformDirection(-_rawVelocity);
+            _playerRefs.Body.velocity = Vector3.zero;
+            var pushBack = _playerRefs.HeadSpace.transform.TransformDirection(-_rawVelocity);
+            _playerRefs.Body.AddForceAtPosition(pushBack, _handRigidbody.transform.position, ForceMode.VelocityChange);
+            if (attachedRigidbody)
+            {
+                _playerRefs.Body.AddForce(attachedRigidbody.velocity, ForceMode.VelocityChange);
+            }
         }
 
-        private void GrabCallback(GameObject obj)
+        private void UpdateDynamicLocomotionVelocity(Rigidbody attachedRigidbody)
+        {
+            // Since we do fixed joints and even if we don't setting velocity to exact controller velocity makes movement consistent.
+            _playerRefs.Body.velocity = Vector3.zero;
+            var pushBack = _playerRefs.HeadSpace.transform.TransformDirection(-_rawVelocity) *
+                           Mathf.Clamp01(attachedRigidbody.mass / _playerRefs.Body.mass);
+            _playerRefs.Body.AddForceAtPosition(pushBack, _handRigidbody.transform.position, ForceMode.VelocityChange);
+            if (attachedRigidbody)
+            {
+                _playerRefs.Body.AddForce(attachedRigidbody.velocity, ForceMode.VelocityChange);
+            }
+        }
+
+        private void GrabCallback(GameObject obj, Vector3 position)
         {
             foreach (var child in obj.GetComponentsInChildren<IGrabHandler>())
             {
-                child.OnGrab(new GrabContext { Left = _leftHand });
+                child.OnGrab(new GrabContext { Left = _leftHand, Position = position });
             }
         }
 
@@ -446,13 +558,63 @@ namespace UnityEcho.Mechanics
         {
             var context = new ReleaseContext
             {
-                Velocity = _headSpace.TransformDirection(_rawVelocity),
-                AngularVelocity = _headSpace.TransformDirection(_rawRotation * _rawAngularVelocity),
+                Velocity = _playerRefs.HeadSpace.TransformDirection(_rawVelocity),
+                AngularVelocity = _playerRefs.HeadSpace.TransformDirection(_rawRotation * _rawAngularVelocity),
                 Left = _leftHand
             };
             foreach (var child in obj.GetComponentsInChildren<IReleaseHandler>())
             {
                 child.OnRelease(context);
+            }
+        }
+
+        private void EndDynamicGrab()
+        {
+            ReleaseCallback(_rootDynamicGrabBody.gameObject);
+            DynamicGrabJoint = null;
+            _rootDynamicGrabBody = null;
+            _dynamicGrabs.Clear();
+            HeadToDynamicJoint.connectedMassScale = _idleMassScale;
+            Released?.Invoke(this);
+            _hasDynamicGrab = false;
+        }
+
+        private void HandleBrokenDynamicJoint()
+        {
+            ClearDynamicGrabs();
+            EndDynamicGrab();
+        }
+
+        private void ClearDynamicGrabs()
+        {
+            var allOtherControllers = FindObjectsOfType<GrabMoveController>().ToList();
+            allOtherControllers.Remove(this);
+
+            foreach (var grab in _dynamicGrabs)
+            {
+                Destroy(grab.GetComponent<GrabbedCollisionEventsConnector>());
+
+                var usedElseWhere = false;
+                foreach (var controller in allOtherControllers)
+                {
+                    if (controller._dynamicGrabs.Contains(grab))
+                    {
+                        usedElseWhere = true;
+                        break;
+                    }
+                }
+
+                if (usedElseWhere)
+                {
+                    break;
+                }
+
+                // probably not a good idea to always remove the player from exclude layers
+                grab.excludeLayers &= ~LayerMask.GetMask("Player");
+
+                //TODO: take mass into account
+                //grab.velocity = _body.velocity + _body.transform.TransformDirection(_rawVelocity);
+                //grab.AddTorque(_rawAngularVelocity, ForceMode.VelocityChange);
             }
         }
 
@@ -467,16 +629,29 @@ namespace UnityEcho.Mechanics
 
             if (StaticGrabJoint)
             {
-                Destroy(StaticGrabJoint);
-                StaticGrabJoint = null;
-                if (_rawVelocity.magnitude <= _releaseVelocityDampenThreshold)
+                var attachedRigidBody = StaticGrabJoint.GetComponent<Rigidbody>();
+                if (GrabData.GrabHit.Collider.attachedRigidbody && GrabData.GrabHit.Collider.attachedRigidbody.isKinematic)
                 {
-                    //TODO: If the static grab is kinematic take into account its velocity
-                    _body.velocity = Vector3.zero;
+                    Destroy(StaticGrabJoint);
+                    ReleaseCallback(GrabData.GrabHit.Collider.attachedRigidbody.gameObject);
                 }
                 else
                 {
-                    UpdateLocomotionVelocity();
+                    Destroy(StaticGrabJoint.gameObject);
+                    ReleaseCallback(GrabData.GrabHit.Collider.gameObject);
+                }
+
+                StaticGrabJoint = null;
+                if (!PhysicallyAccurateRelease &&
+                    _rawVelocity.magnitude <= _releaseVelocityDampenThreshold &&
+                    (!attachedRigidBody || attachedRigidBody.velocity.magnitude <= _releaseVelocityDampenThreshold))
+                {
+                    //TODO: If the static grab is kinematic take into account its velocity
+                    _playerRefs.Body.velocity = Vector3.zero;
+                }
+                else
+                {
+                    UpdateStaticLocomotionVelocity(attachedRigidBody);
                 }
 
                 HeadToDynamicJoint.connectedMassScale = _idleMassScale;
@@ -486,43 +661,15 @@ namespace UnityEcho.Mechanics
             {
                 var rootBody = DynamicGrabJoint.connectedBody;
                 var grabObject = rootBody.GetComponent<GrabObject>();
-                var allOtherControllers = FindObjectsOfType<GrabMoveController>().ToList();
-                allOtherControllers.Remove(this);
+
                 Destroy(DynamicGrabJoint);
                 DynamicGrabJoint.connectedBody = null;
 
-                var hadKinematicBody = _dynamicGrabs.Any(g => g.isKinematic);
-
-                foreach (var grab in _dynamicGrabs)
-                {
-                    Destroy(grab.GetComponent<GrabbedCollisionEventsConnector>());
-
-                    var usedElseWhere = false;
-                    foreach (var controller in allOtherControllers)
-                    {
-                        if (controller._dynamicGrabs.Contains(grab))
-                        {
-                            usedElseWhere = true;
-                            break;
-                        }
-                    }
-
-                    if (usedElseWhere)
-                    {
-                        break;
-                    }
-
-                    // probably not a good idea to always remove the player from exclude layers
-                    grab.excludeLayers &= ~LayerMask.GetMask("Player");
-
-                    //TODO: take mass into account
-                    //grab.velocity = _body.velocity + _body.transform.TransformDirection(_rawVelocity);
-                    //grab.AddTorque(_rawAngularVelocity, ForceMode.VelocityChange);
-                }
+                ClearDynamicGrabs();
 
                 if (!rootBody.isKinematic)
                 {
-                    if (_rawVelocity.magnitude <= _dynamicReleaseVelocityDampenThreshold)
+                    if (!PhysicallyAccurateRelease && _rawVelocity.magnitude <= _dynamicReleaseVelocityDampenThreshold)
                     {
                         // Make the object stop, this makes it possible to completely stop objects in the air, not physically accurate but feels good.
                         if (grabObject && !grabObject.Virtual)
@@ -532,25 +679,28 @@ namespace UnityEcho.Mechanics
                         }
                         else
                         {
-                            rootBody.velocity = _body.velocity;
-                            rootBody.angularVelocity = _body.angularVelocity;
+                            rootBody.velocity = _playerRefs.Body.velocity;
+                            rootBody.angularVelocity = _playerRefs.Body.angularVelocity;
                         }
                     }
                     else
                     {
-                        rootBody.velocity = _body.velocity;
-                        //TODO: Add a system to take into account mass for objects
-                        rootBody.AddForce(_headSpace.TransformDirection(_rawVelocity), ForceMode.VelocityChange);
+                        rootBody.velocity = _playerRefs.Body.velocity;
+                        // Have more controlled force, since we want only big objects to hard to push, others we want 1 to 1 with hand velocity.
+                        var force = _releaseVelocityMultiplier.Evaluate(rootBody.mass);
+                        rootBody.AddForce(_playerRefs.HeadSpace.TransformDirection(_rawVelocity) * force, ForceMode.VelocityChange);
                     }
+
+                    UpdateDynamicLocomotionVelocity(rootBody);
+                }
+                else
+                {
+                    UpdateStaticLocomotionVelocity(rootBody);
                 }
 
                 //TODO: figure out how to rotate angular velocity
 
-                ReleaseCallback(rootBody.gameObject);
-                DynamicGrabJoint = null;
-                _dynamicGrabs.Clear();
-                HeadToDynamicJoint.connectedMassScale = _idleMassScale;
-                Released?.Invoke(this);
+                EndDynamicGrab();
             }
             else if (VirtualGrab)
             {
@@ -582,16 +732,18 @@ namespace UnityEcho.Mechanics
             GrabData.GrabLocalNormal = GrabData.GrabHit.Collider.transform.InverseTransformDirection(GrabData.GrabHit.Normal);
             // We want projected forward to avoid strange angles, this will ensure it's on the triangle plane.
             var projectedForward = Vector3.ProjectOnPlane(
-                _headSpace.transform.TransformDirection(_rawRotation * _forwardDirection),
+                _playerRefs.HeadSpace.transform.TransformDirection(_rawRotation * _forwardDirection),
                 GrabData.GrabHit.Normal);
             GrabData.GrabLocalForward = GrabData.GrabHit.Collider.transform.InverseTransformDirection(Vector3.Normalize(projectedForward));
-            GrabData.GrabStartHandRotation = Quaternion.Inverse(_headSpace.rotation * _rawRotation);
+            GrabData.GrabStartHandRotationInverse = Quaternion.Inverse(_playerRefs.HeadSpace.rotation * _rawRotation);
+            GrabData.Rigidbody = grabRigidbody;
 
             if (grabRigidbody && !grabRigidbody.isKinematic)
             {
                 GrabData.GrabObjectStartRotation = grabRigidbody.rotation;
                 DynamicGrabJoint = _handRigidbody.gameObject.AddComponent<ConfigurableJoint>();
                 DynamicGrabJoint.CopyJoint(_dynamicGrabJointPrefab.GetComponent<ConfigurableJoint>());
+
                 if (grabObject)
                 {
                     var xDrive = DynamicGrabJoint.xDrive;
@@ -614,13 +766,20 @@ namespace UnityEcho.Mechanics
                     slerpDrive.positionSpring *= grabObject.HandRotationMotorMultiply;
                     DynamicGrabJoint.slerpDrive = zDrive;
                 }
+
+                var bodyRotation = Quaternion.Inverse(_playerRefs.HeadSpace.transform.rotation);
+                DynamicGrabJoint.axis = Vector3.right;
+                DynamicGrabJoint.secondaryAxis = Vector3.up;
+
+                _hasDynamicGrab = true;
+                _rootDynamicGrabBody = grabRigidbody;
                 DynamicGrabJoint.connectedBody = grabRigidbody;
                 DynamicGrabJoint.connectedAnchor = grabRigidbody.transform.InverseTransformPoint(GrabData.GrabHit.Position);
                 if (grabRigidbody.isKinematic)
                 {
                     //We want the player to match the velocity of the grabbed object so that it feels better if say they are moving and they grabbed a kinematic object match their velocity;
                     //TODO: probably better if we also handle non kinematic objects that have a high mass for example so they stop the player too
-                    _body.velocity = grabRigidbody.velocity;
+                    _playerRefs.Body.velocity = grabRigidbody.velocity;
                 }
 
                 GetDynamicGrabs(grabRigidbody);
@@ -638,7 +797,7 @@ namespace UnityEcho.Mechanics
                     grab.gameObject.AddComponent<GrabbedCollisionEventsConnector>();
                 }
 
-                GrabCallback(grabRigidbody.gameObject);
+                GrabCallback(grabRigidbody.gameObject, GrabData.GrabHit.Position);
                 Grabbed?.Invoke(GrabData.GrabHit, this);
                 _onGrab.Invoke();
                 return;
@@ -648,24 +807,49 @@ namespace UnityEcho.Mechanics
             {
                 VirtualGrab = grabObject.gameObject;
                 GrabData.GrabObjectStartRotation = grabObject.transform.rotation;
-                GrabCallback(VirtualGrab);
+                GrabCallback(VirtualGrab, GrabData.GrabHit.Position);
             }
             else
             {
-                // Static grabbing
-                StaticGrabJoint = Instantiate(
-                    _staticGrabJointPrefab,
-                    GrabData.GrabHit.Position,
-                    Quaternion.identity,
-                    grabRigidbody ? grabRigidbody.transform : null);
-                StaticGrabJoint.name = $"{HandNode} Static Grab Joint";
-                var joint = StaticGrabJoint.GetComponent<ConfigurableJoint>();
-                joint.anchor = StaticGrabJoint.transform.InverseTransformPoint(_headSpace.transform.TransformPoint(_rawPosition));
-                joint.connectedAnchor = _body.transform.InverseTransformPoint(_headSpace.transform.TransformPoint(_rawPosition));
-                joint.connectedBody = _body;
+                if (grabRigidbody && grabRigidbody.isKinematic)
+                {
+                    // Static grab to kinematic objects, straight joint to it.
+                    StaticGrabJoint = grabRigidbody.gameObject.AddComponent<ConfigurableJoint>();
+                    StaticGrabJoint.CopyJoint(_staticGrabJointPrefab.GetComponent<ConfigurableJoint>());
+                    GrabCallback(grabRigidbody.gameObject, GrabData.GrabHit.Position);
+                }
+                else
+                {
+                    // Static grabbing to surfaces no rigidbody involved
+                    StaticGrabJoint = Instantiate(_staticGrabJointPrefab, GrabData.GrabHit.Position, Quaternion.identity)
+                        .GetComponent<ConfigurableJoint>();
+                    GrabCallback(GrabData.GrabHit.Collider.gameObject, GrabData.GrabHit.Position);
+                    StaticGrabJoint.name = $"{HandNode} Static Grab Joint";
+                }
+
+                StaticGrabJoint.anchor =
+                    StaticGrabJoint.transform.InverseTransformPoint(_playerRefs.HeadSpace.transform.TransformPoint(_rawPosition));
+                StaticGrabJoint.connectedAnchor =
+                    _playerRefs.Body.transform.InverseTransformPoint(_playerRefs.HeadSpace.transform.TransformPoint(_rawPosition));
+                StaticGrabJoint.connectedBody = _playerRefs.Body;
+
+                var axis = _playerRefs.HeadSpace.TransformDirection(_rawRotation * Vector3.right);
+                var secondaryAxis = _playerRefs.HeadSpace.TransformDirection(_rawRotation * Vector3.down);
+                GrabData.Axis = axis;
+                GrabData.SecondaryAxis = secondaryAxis;
+                StaticGrabJoint.axis = Quaternion.Inverse(StaticGrabJoint.transform.rotation) * axis;
+                StaticGrabJoint.secondaryAxis = Quaternion.Inverse(StaticGrabJoint.transform.rotation) * secondaryAxis;
+
+                // Store the joint's coordinate system (created from normal and up)
+                _staticGrabJointRotation = Quaternion.LookRotation(axis, secondaryAxis);
+
+                // Calculate the hand's rotation relative to the joint's coordinate system
+                _staticGrabWorldHandRotation = _playerRefs.HeadSpace.rotation * _rawRotation;
+
                 // makes it a lot nicer if we stop the player immediately;
-                _body.velocity = Vector3.zero;
-                GrabData.GrabObjectStartRotation = GrabData.GrabHit.Collider.transform.rotation;
+                _playerRefs.Body.velocity = Vector3.zero;
+                GrabData.GrabObjectStartRotation = StaticGrabJoint.transform.rotation;
+
                 _onGrab.Invoke();
             }
 
@@ -684,17 +868,17 @@ namespace UnityEcho.Mechanics
 
             if (!HasGrabbed && GrabData.PenetrationHit.collider)
             {
-                HeadToDynamicJoint.anchor = _body.transform.InverseTransformPoint(RawClampedWorldPosition);
+                HeadToDynamicJoint.targetPosition = _playerRefs.HeadSpace.localRotation * _rawPosition;
             }
             else
             {
-                HeadToDynamicJoint.anchor = _headSpace.transform.rotation * _rawPosition;
-                RawClampedWorldPosition = _headSpace.TransformPoint(_rawPosition);
+                HeadToDynamicJoint.targetPosition = _playerRefs.HeadSpace.localRotation * _rawPosition;
+                RawClampedWorldPosition = _playerRefs.HeadSpace.TransformPoint(_rawPosition);
             }
 
-            _handRigidbody.MoveRotation(_headSpace.transform.rotation * _rawRotation);
-            _handRigidbody.velocity = _headSpace.transform.TransformDirection(_rawVelocity);
-            _handRigidbody.angularVelocity = _headSpace.transform.TransformDirection(_rawAngularVelocity);
+            //_handRigidbody.MoveRotation(_playerRefs.HeadSpace.transform.rotation * _rawRotation);
+            _handRigidbody.velocity = _playerRefs.HeadSpace.transform.TransformDirection(_rawVelocity);
+            _handRigidbody.angularVelocity = _playerRefs.HeadSpace.transform.TransformDirection(_rawAngularVelocity);
         }
 
         private void UpdateRawValues()
@@ -704,17 +888,20 @@ namespace UnityEcho.Mechanics
                 return;
             }
 
+            // This is to avoid hands going through walls based on your head position.
+            // We don't want to be able to grab stuff beyond a wall you can't see.
             if (!HasGrabbed && GrabData.PenetrationHit.collider)
             {
-                var dir = _headSpace.transform.TransformPoint(_rawPosition) - _head.position;
+                var headPos = _playerRefs.Head.position;
+                var dir = _playerRefs.HeadSpace.transform.TransformPoint(_rawPosition) - headPos;
                 var dirLength = dir.magnitude;
                 dir /= dirLength;
                 dir *= Mathf.Min(dirLength, GrabData.PenetrationHit.distance);
-                RawClampedWorldPosition = _head.position + dir;
+                RawClampedWorldPosition = headPos + dir;
             }
             else
             {
-                RawClampedWorldPosition = _headSpace.TransformPoint(_rawPosition);
+                RawClampedWorldPosition = _playerRefs.HeadSpace.TransformPoint(_rawPosition);
             }
         }
 
@@ -774,15 +961,16 @@ namespace UnityEcho.Mechanics
             hitData = default;
             hasPenetration = false;
             var grabRadius = _grabRadius;
-            var rawHandPos = _headSpace.transform.TransformPoint(_rawPosition);
-            var headPos = _head.position;
+            var rawHandPos = _playerRefs.HeadSpace.transform.TransformPoint(_rawPosition);
+            var headPos = _playerRefs.Head.position;
 
             var penetrationRay = new Ray(headPos, Vector3.Normalize(rawHandPos - headPos));
             var penetrationCount = Physics.RaycastNonAlloc(
                 penetrationRay,
                 _penetrationHits,
                 Vector3.Magnitude(rawHandPos - headPos) + grabRadius,
-                _grabMask);
+                _grabMask,
+                QueryTriggerInteraction.Ignore);
             for (var i = 0; i < penetrationCount; i++)
             {
                 var hit = _penetrationHits[i];
@@ -806,6 +994,7 @@ namespace UnityEcho.Mechanics
             Vector3 worldOrigin,
             int triangleStart,
             Vector3 palmWorldDirection,
+            Vector3 palmWorldUp,
             MeshCollider collider,
             out GrabHitData hitData)
         {
@@ -832,14 +1021,15 @@ namespace UnityEcho.Mechanics
                     connectivityBuilder.VerticesRaw[triangle[0]],
                     connectivityBuilder.VerticesRaw[triangle[1]],
                     connectivityBuilder.VerticesRaw[triangle[2]]);
+                var normal = collider.transform.TransformDirection(plane.normal);
 
                 hitData = new GrabHitData
                 {
                     Position = collider.transform.TransformPoint(closestPoint),
                     LocalPosition = closestPoint,
                     Collider = collider,
-                    Normal = collider.transform.TransformDirection(plane.normal),
-                    Up = palmWorldDirection,
+                    Normal = normal,
+                    Up = Vector3.ProjectOnPlane(palmWorldUp, normal).normalized,
                     Triangle = closestTriangle
                 };
                 return true;
@@ -852,9 +1042,10 @@ namespace UnityEcho.Mechanics
         private void RaycastNewTarget()
         {
             var grabRadius = _grabRadius;
-            var rawHandPos = _headSpace.transform.TransformPoint(_rawPosition);
-            var rawHandRotation = _headSpace.rotation * _rawRotation;
+            var rawHandPos = _playerRefs.HeadSpace.transform.TransformPoint(_rawPosition);
+            var rawHandRotation = _playerRefs.HeadSpace.rotation * _rawRotation;
             var palmDir = rawHandRotation * _grabDirection;
+            var palmUp = rawHandRotation * Vector3.Cross(_grabDirection, _forwardDirection);
 
             GrabData.GrabHit = default;
 
@@ -874,7 +1065,13 @@ namespace UnityEcho.Mechanics
             }
             else
             {
-                if (Physics.SphereCast(new Ray(rawHandPos - _grabRadius * palmDir, palmDir), _grabRadius, out var hit, grabRadius, _grabMask))
+                if (Physics.SphereCast(
+                        new Ray(rawHandPos - _grabRadius * palmDir, palmDir),
+                        _grabRadius,
+                        out var hit,
+                        grabRadius,
+                        _grabMask,
+                        QueryTriggerInteraction.Ignore))
                 {
                     hitCollider = hit.collider;
                     hitNormal = hit.normal;
@@ -884,7 +1081,12 @@ namespace UnityEcho.Mechanics
                 else
                 {
                     // hand might be inside a mesh fallback to slow manual triangle search
-                    var hits = Physics.OverlapSphereNonAlloc(rawHandPos, _grabRadius, _fallbackOverlapColliders, _grabMask);
+                    var hits = Physics.OverlapSphereNonAlloc(
+                        rawHandPos,
+                        _grabRadius,
+                        _fallbackOverlapColliders,
+                        _grabMask,
+                        QueryTriggerInteraction.Ignore);
                     var closestColliderDistance = float.PositiveInfinity;
                     for (var i = 0; i < hits; i++)
                     {
@@ -929,7 +1131,7 @@ namespace UnityEcho.Mechanics
                 GrabHitData closestPoint;
                 if (hitCollider is MeshCollider meshCollider)
                 {
-                    if (!CalculateMeshHit(hitPoint, hitTriangle, palmDir, meshCollider, out closestPoint))
+                    if (!CalculateMeshHit(hitPoint, hitTriangle, palmDir, palmUp, meshCollider, out closestPoint))
                     {
                         // Use original hit since we didn't find one on mesh
                         closestPoint = new GrabHitData
@@ -938,7 +1140,7 @@ namespace UnityEcho.Mechanics
                             LocalPosition = meshCollider.transform.InverseTransformPoint(hitPoint),
                             Normal = hitNormal,
                             Collider = hitCollider,
-                            Up = rawHandRotation * Vector3.forward,
+                            Up = Vector3.ProjectOnPlane(rawHandRotation * Vector3.up, hitNormal).normalized,
                             Triangle = closestPoint.Triangle
                         };
                     }
@@ -951,7 +1153,7 @@ namespace UnityEcho.Mechanics
                         LocalPosition = hitCollider.transform.InverseTransformPoint(hitPoint),
                         Normal = hitNormal,
                         Collider = hitCollider,
-                        Up = rawHandRotation * Vector3.forward,
+                        Up = Vector3.ProjectOnPlane(rawHandRotation * Vector3.up, hitNormal).normalized,
                         Triangle = hitTriangle
                     };
                 }
@@ -978,16 +1180,25 @@ namespace UnityEcho.Mechanics
 
             public bool HadPenetrationHit;
 
+            public Vector3 Axis;
+
+            public Vector3 SecondaryAxis;
+
             public Vector3 GrabLocalNormal { get; set; }
 
             public Vector3 GrabLocalForward { get; set; }
 
+            /// <summary>
+            /// The starting rotation of object grabbed, in world space
+            /// </summary>
             public Quaternion GrabObjectStartRotation { get; set; }
 
             /// <summary>
-            /// The XR origin relative hand rotation start.
+            /// The Inverse of the XR origin relative hand rotation.
             /// </summary>
-            public Quaternion GrabStartHandRotation { get; set; }
+            public Quaternion GrabStartHandRotationInverse { get; set; }
+
+            public Rigidbody Rigidbody { get; set; }
         }
     }
 }
