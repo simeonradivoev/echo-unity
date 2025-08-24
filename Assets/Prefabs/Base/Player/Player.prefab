@@ -194,13 +194,13 @@ Light:
   m_Type: 0
   m_Shape: 0
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_Intensity: 2
-  m_Range: 10
+  m_Intensity: 1
+  m_Range: 12
   m_SpotAngle: 80
-  m_InnerSpotAngle: 12
+  m_InnerSpotAngle: 24
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 2
+    m_Type: 1
     m_Resolution: 128
     m_CustomResolution: -1
     m_Strength: 1
@@ -258,7 +258,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Version: 3
   m_UsePipelineSettings: 0
-  m_AdditionalLightsShadowResolutionTier: 1
+  m_AdditionalLightsShadowResolutionTier: 2
   m_LightLayerMask: 1
   m_RenderingLayers: 1
   m_CustomShadowLayers: 0
@@ -746,7 +746,6 @@ GameObject:
   m_Component:
   - component: {fileID: 5049752869569879219}
   - component: {fileID: 673015002569358844}
-  - component: {fileID: 6362661109412734063}
   - component: {fileID: 5037248468942257110}
   - component: {fileID: 8749145992657959154}
   - component: {fileID: 2216768319573238607}
@@ -806,108 +805,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 1
---- !u!153 &6362661109412734063
-ConfigurableJoint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3447957045489209004}
-  m_ConnectedBody: {fileID: 1429137715762596516}
-  m_ConnectedArticulationBody: {fileID: 0}
-  m_Anchor: {x: 0, y: 0, z: 0}
-  m_Axis: {x: 1, y: 0, z: 0}
-  m_AutoConfigureConnectedAnchor: 0
-  m_ConnectedAnchor: {x: 0, y: 0, z: 0}
-  serializedVersion: 3
-  m_SecondaryAxis: {x: 0, y: 1, z: 0}
-  m_XMotion: 0
-  m_YMotion: 0
-  m_ZMotion: 0
-  m_AngularXMotion: 2
-  m_AngularYMotion: 2
-  m_AngularZMotion: 2
-  m_LinearLimitSpring:
-    spring: 0
-    damper: 0
-  m_LinearLimit:
-    limit: 0
-    bounciness: 0
-    contactDistance: 0
-  m_AngularXLimitSpring:
-    spring: 0
-    damper: 0
-  m_LowAngularXLimit:
-    limit: 0
-    bounciness: 0
-    contactDistance: 0
-  m_HighAngularXLimit:
-    limit: 0
-    bounciness: 0
-    contactDistance: 0
-  m_AngularYZLimitSpring:
-    spring: 0
-    damper: 0
-  m_AngularYLimit:
-    limit: 0
-    bounciness: 0
-    contactDistance: 0
-  m_AngularZLimit:
-    limit: 0
-    bounciness: 0
-    contactDistance: 0
-  m_TargetPosition: {x: 0, y: 0, z: 0}
-  m_TargetVelocity: {x: 0, y: 0, z: 0}
-  m_XDrive:
-    serializedVersion: 4
-    positionSpring: 5000
-    positionDamper: 1
-    maximumForce: 1000
-    useAcceleration: 0
-  m_YDrive:
-    serializedVersion: 4
-    positionSpring: 5000
-    positionDamper: 1
-    maximumForce: 1000
-    useAcceleration: 0
-  m_ZDrive:
-    serializedVersion: 4
-    positionSpring: 5000
-    positionDamper: 1
-    maximumForce: 1000
-    useAcceleration: 0
-  m_TargetRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_TargetAngularVelocity: {x: 0, y: 0, z: 0}
-  m_RotationDriveMode: 1
-  m_AngularXDrive:
-    serializedVersion: 4
-    positionSpring: 0
-    positionDamper: 0
-    maximumForce: 3.4028233e+38
-    useAcceleration: 0
-  m_AngularYZDrive:
-    serializedVersion: 4
-    positionSpring: 0
-    positionDamper: 0
-    maximumForce: 3.4028233e+38
-    useAcceleration: 0
-  m_SlerpDrive:
-    serializedVersion: 4
-    positionSpring: 0
-    positionDamper: 0
-    maximumForce: 3.4028233e+38
-    useAcceleration: 0
-  m_ProjectionMode: 0
-  m_ProjectionDistance: 0.01
-  m_ProjectionAngle: 180
-  m_ConfiguredInWorldSpace: 0
-  m_SwapBodies: 1
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_EnableCollision: 0
-  m_EnablePreprocessing: 1
-  m_MassScale: 1
-  m_ConnectedMassScale: 1
 --- !u!114 &5037248468942257110
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -930,6 +827,7 @@ MonoBehaviour:
   _grabRadius: 0.1
   _grabMaxDepth: 0.2
   _grabbedMassScale: 1
+  _grabbedObjectMassScale: 2
   _grabbedAnchoredMassScale: 100
   _idleMassScale: 1000
   _grabDirection: {x: 1, y: 0, z: 0}
@@ -943,7 +841,9 @@ MonoBehaviour:
     type: 3}
   _dynamicGrabJointPrefab: {fileID: 1179660584016942274, guid: dc5d9a8d94e018a4dbf5001867e8f7ce,
     type: 3}
+  _headToDynamicJointPrefab: {fileID: 0}
   _headFollower: {fileID: 9014022928634145461}
+  _forward: {fileID: 0}
   _grabActionRef: {fileID: 6975215416723966302, guid: 7bd14a6082be6be4bad0a11dcbe18252,
     type: 3}
   _releaseVelocityMultiplier:
@@ -1837,7 +1737,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3242df79f0eb457cb2b75401de9f2c85, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultRealisticMovement: 1
+  _defaultRealisticMovement: 0
   _references: {fileID: 4692532044414929816}
 --- !u!114 &6786800547347018870
 MonoBehaviour:
@@ -1949,7 +1849,6 @@ GameObject:
   m_Component:
   - component: {fileID: 8512660465040946651}
   - component: {fileID: 9124499542388961223}
-  - component: {fileID: 1720142832670931911}
   - component: {fileID: 1390708901257821977}
   - component: {fileID: 8333322877576979057}
   - component: {fileID: 2987712054270366856}
@@ -2008,108 +1907,6 @@ Rigidbody:
   m_Interpolate: 1
   m_Constraints: 112
   m_CollisionDetection: 1
---- !u!153 &1720142832670931911
-ConfigurableJoint:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6642070277330784860}
-  m_ConnectedBody: {fileID: 1429137715762596516}
-  m_ConnectedArticulationBody: {fileID: 0}
-  m_Anchor: {x: 0, y: 0, z: 0}
-  m_Axis: {x: 1, y: 0, z: 0}
-  m_AutoConfigureConnectedAnchor: 0
-  m_ConnectedAnchor: {x: 0, y: 0, z: 0}
-  serializedVersion: 3
-  m_SecondaryAxis: {x: 0, y: 1, z: 0}
-  m_XMotion: 0
-  m_YMotion: 0
-  m_ZMotion: 0
-  m_AngularXMotion: 2
-  m_AngularYMotion: 2
-  m_AngularZMotion: 2
-  m_LinearLimitSpring:
-    spring: 0
-    damper: 0
-  m_LinearLimit:
-    limit: 0
-    bounciness: 0
-    contactDistance: 0
-  m_AngularXLimitSpring:
-    spring: 0
-    damper: 0
-  m_LowAngularXLimit:
-    limit: 0
-    bounciness: 0
-    contactDistance: 0
-  m_HighAngularXLimit:
-    limit: 0
-    bounciness: 0
-    contactDistance: 0
-  m_AngularYZLimitSpring:
-    spring: 0
-    damper: 0
-  m_AngularYLimit:
-    limit: 0
-    bounciness: 0
-    contactDistance: 0
-  m_AngularZLimit:
-    limit: 0
-    bounciness: 0
-    contactDistance: 0
-  m_TargetPosition: {x: 0, y: 0, z: 0}
-  m_TargetVelocity: {x: 0, y: 0, z: 0}
-  m_XDrive:
-    serializedVersion: 4
-    positionSpring: 5000
-    positionDamper: 1
-    maximumForce: 1000
-    useAcceleration: 1
-  m_YDrive:
-    serializedVersion: 4
-    positionSpring: 5000
-    positionDamper: 1
-    maximumForce: 1000
-    useAcceleration: 1
-  m_ZDrive:
-    serializedVersion: 4
-    positionSpring: 5000
-    positionDamper: 1
-    maximumForce: 1000
-    useAcceleration: 1
-  m_TargetRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_TargetAngularVelocity: {x: 0, y: 0, z: 0}
-  m_RotationDriveMode: 1
-  m_AngularXDrive:
-    serializedVersion: 4
-    positionSpring: 0
-    positionDamper: 0
-    maximumForce: 3.4028233e+38
-    useAcceleration: 0
-  m_AngularYZDrive:
-    serializedVersion: 4
-    positionSpring: 0
-    positionDamper: 0
-    maximumForce: 3.4028233e+38
-    useAcceleration: 0
-  m_SlerpDrive:
-    serializedVersion: 4
-    positionSpring: 0
-    positionDamper: 0
-    maximumForce: 3.4028233e+38
-    useAcceleration: 0
-  m_ProjectionMode: 0
-  m_ProjectionDistance: 0.01
-  m_ProjectionAngle: 180
-  m_ConfiguredInWorldSpace: 0
-  m_SwapBodies: 1
-  m_BreakForce: Infinity
-  m_BreakTorque: Infinity
-  m_EnableCollision: 0
-  m_EnablePreprocessing: 1
-  m_MassScale: 1
-  m_ConnectedMassScale: 1
 --- !u!114 &1390708901257821977
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2132,6 +1929,7 @@ MonoBehaviour:
   _grabRadius: 0.1
   _grabMaxDepth: 0.2
   _grabbedMassScale: 1
+  _grabbedObjectMassScale: 2
   _grabbedAnchoredMassScale: 100
   _idleMassScale: 1000
   _grabDirection: {x: -1, y: 0, z: 0}
@@ -2145,7 +1943,9 @@ MonoBehaviour:
     type: 3}
   _dynamicGrabJointPrefab: {fileID: 1179660584016942274, guid: dc5d9a8d94e018a4dbf5001867e8f7ce,
     type: 3}
+  _headToDynamicJointPrefab: {fileID: 0}
   _headFollower: {fileID: 9014022928634145461}
+  _forward: {fileID: 0}
   _grabActionRef: {fileID: 1735572605767174680, guid: 7bd14a6082be6be4bad0a11dcbe18252,
     type: 3}
   _releaseVelocityMultiplier:

@@ -54,6 +54,10 @@ namespace UnityEcho.Mechanics
             var plane = new Plane(transform.forward, transform.position);
             var fingerForward = rotation * Vector3.forward;
             var angle = Vector3.Angle(fingerForward, transform.up);
+            if (!plane.GetSide(position))
+            {
+                return;
+            }
             var closestPoint = plane.ClosestPointOnPlane(position);
             var radiusToCenter = Vector3.Distance(closestPoint, transform.position);
             var distanceToPlane = plane.GetDistanceToPoint(position);
