@@ -3956,7 +3956,7 @@ PrefabInstance:
     - target: {fileID: 5866666021909216657, guid: 73ffbc06802a247cfb1b26f4ee67eba8,
         type: 3}
       propertyPath: m_ApplyRootMotion
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6549464493350040163, guid: 73ffbc06802a247cfb1b26f4ee67eba8,
         type: 3}
@@ -4636,7 +4636,6 @@ MonoBehaviour:
   HeadOffset: {x: 0, y: -0.1, z: -0.1}
   Head: {fileID: 2919668497454220016}
   HipJointBody: {fileID: 1726177700914629288}
-  _testAngle: 0
 --- !u!4 &6668526789983798669 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8580684477638385493, guid: 73ffbc06802a247cfb1b26f4ee67eba8,

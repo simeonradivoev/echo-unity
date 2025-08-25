@@ -107,17 +107,6 @@
             ],
             "bindings": [
                 {
-                    "name": "",
-                    "id": "31873a11-3b11-4e8f-a50b-3924f5cdc79b",
-                    "path": "",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "",
-                    "action": "Thrusters",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
                     "name": "2D Vector",
                     "id": "5d51deaa-1495-4cb0-af6d-b782255824d0",
                     "path": "2DVector",
@@ -806,6 +795,34 @@
                     "processors": "",
                     "groups": "XR",
                     "action": "TrackedDeviceOrientation",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        },
+        {
+            "name": "Debug",
+            "id": "875cff50-e923-46aa-9ca1-b37b321dd2d9",
+            "actions": [
+                {
+                    "name": "RecordBody",
+                    "type": "Button",
+                    "id": "f481bcb7-7854-47ba-b242-e07cf6e65ea8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "06a0152b-716c-4aff-b125-3d9759d121ea",
+                    "path": "<XRController>{RightHand}/{PrimaryButton}",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "RecordBody",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

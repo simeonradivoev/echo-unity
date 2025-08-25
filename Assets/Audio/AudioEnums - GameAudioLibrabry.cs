@@ -12,7 +12,8 @@
         LinearEndReach,
         BatteryAttach,
         EngineThrusters,
-        Flashlight
+        Flashlight,
+        LightHum
     }
     public enum GameAudioLibrabryMusic {
         CylinderRoomMusic,

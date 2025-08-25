@@ -1,6 +1,5 @@
 using UnityEcho.Mechanics;
 using UnityEngine;
-using UnityEngine.InputSystem.Utilities;
 
 [RequireComponent(typeof(Animator))]
 public class ProceduralBodyAnimator : MonoBehaviour
@@ -13,8 +12,6 @@ public class ProceduralBodyAnimator : MonoBehaviour
     public Transform Head;
 
     public Rigidbody HipJointBody; // the HMD's rigidbody
-
-    public float _testAngle;
 
     private IKController _ikController;
 
@@ -32,27 +29,6 @@ public class ProceduralBodyAnimator : MonoBehaviour
     {
         animator.transform.position = HipJointBody.transform.position;
         animator.transform.rotation = _ikController.Body.rotation;
-    }
-
-    private void LateUpdate()
-    {
-        var leftShoulder = animator.GetBoneTransform(HumanBodyBones.LeftShoulder);
-        var rightShoulder = animator.GetBoneTransform(HumanBodyBones.RightShoulder);
-        var hips = animator.GetBoneTransform(HumanBodyBones.Hips);
-
-        var leftShoulderPos = leftShoulder.position;
-        var leftShoulderRot = leftShoulder.rotation;
-        var rightShoulderPos = rightShoulder.position;
-        var rightShoulderRot = rightShoulder.rotation;
-
-        //var chestPos = chest.position;
-        //var chestRotation = chest.rotation;
-
-        //chest.position = chestPos;
-        //chest.rotation = chestRotation;
-
-        var headBone = animator.GetBoneTransform(HumanBodyBones.Head);
-        var neckBone = animator.GetBoneTransform(HumanBodyBones.Neck);
     }
 
     private void OnAnimatorIK(int layer)
