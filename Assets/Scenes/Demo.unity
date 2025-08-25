@@ -98848,11 +98848,6 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 2982432723539276846, guid: 3190fcf481b984d45a77381ebb69d4b8,
         type: 3}
-    - target: {fileID: 7678934151354322566, guid: 58bafbc935bae7e4b8ae1ba07fdca19c,
-        type: 3}
-      propertyPath: _defaultRealisticMovement
-      value: 1
-      objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 5460667132876510308, guid: 58bafbc935bae7e4b8ae1ba07fdca19c, type: 3}
     - {fileID: 314044198228888524, guid: 58bafbc935bae7e4b8ae1ba07fdca19c, type: 3}
