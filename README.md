@@ -1,36 +1,35 @@
 ![](https://img.itch.zone/aW1nLzE2NDYwNTcyLnBuZw==/original/NTqf4g.png)
 
-# Summary 📝
+# Summary
 
 I played a bunch of Lone Echo and got inspired to re-create the zero-G mechanics from Lone Echo and Echo Arena. Since very few games have them.
 
 I used the development presentation of Ready at Dawn over at GDC vault https://www.gdcvault.com/play/1024446. They had implementation details on the finger procedural animation and other stuff.
 
-# Features ✨
+# Features
 
-- Procedural IK Hand Animations 🖐️
-- Full upper body IK estimation 🔎
-- Physically based Zero G Movement 🌌
-- 3D Touch screen Unity UI (includes 3D finger position compensation) 📱
-- Sample demo level with simple objectives 🎯
+- Procedural IK Hand Animations
+- Full upper body IK estimation
+- Physically based Zero G Movement
+- 3D Touch screen Unity UI (includes 3D finger position compensation)
+- Sample demo level with simple objectives
+- Lower body physics simulation
+- Moving vehicles
+- Realistic Zero Gravity Movement Option (To prepare you for real zero gravity. Use with caution)
 
-# Missing Features ❌
+# Missing Features
 
-### Thumb IK 🤚
+### Thumb IK
 
 The thumb finger is more complicated than just a hinge joint, so I skipped it for the sake of time.
 
-### Lower Body Simulation 👜
-
-The floating body IK physics animation I kinda skipped since I didn't have enough time for it. But it should be pretty straightforward to implement.
-
-# Implementation Details 💻
+# Implementation Details
 
 Physics interactions differ quite a bit from Lone Echo ones. It comes down to not having low-level access to the physics engine in unity to implement the detailed solution from the GDC presentation. That's why I just use tweaked physics joins to make interactions feel nicer, with some additional tricks to make them more responsive.
 
 The finger IK animation requires intersection calculations on the meshes as described by the GDC presentation. Again we don't have low-level access to the physics engine and the triangle connectivity of physics meshes to help with intersection calculations so I manually calculate them with code ripped from the unity physics package. This probably impacts performance, but I managed to burstify the code, so shouldn't be that much of an issue. I also cache each mesh conectivity.
 
-# Packages Used 📦
+# Packages Used
 
 - [Simple Unity Audio Manager](https://github.com/jackyyang09/Simple-Unity-Audio-Manager)
 - [Unmask For UGUI](https://github.com/mob-sakai/UnmaskForUGUI)
@@ -39,17 +38,20 @@ The finger IK animation requires intersection calculations on the meshes as desc
 - [UnityGLTF](https://github.com/KhronosGroup/UnityGLTF)
 - [UI Shapes Kit](https://github.com/thisotherthing/ui-shapes-kit)
 
-# Demo 🎉
+# Demo
 
 You can try the Windows build over at Itch.io [https://simeonradivoev.itch.io/unity-echo](https://simeonradivoev.itch.io/unity-echo)
+It's also on SideQuest: https://sidequestvr.com/app/43523
 
-# Screenshots 📷
+# Screenshots
 
 ![](https://img.itch.zone/aW1hZ2UvMjc1ODMzNS8xNjQ2MDA4OS5wbmc=/original/XVD4OX.png)
 ![](https://img.itch.zone/aW1hZ2UvMjc1ODMzNS8xNjQ2MDA4Ny5wbmc=/original/oYyahs.png)
 ![](https://img.itch.zone/aW1hZ2UvMjc1ODMzNS8xNjQ2MDA4Ni5wbmc=/original/SouppL.png)
+![](https://img.itch.zone/aW1hZ2UvMjc1ODMzNS8yMjg4OTE1MC5qcGc=/original/VL6pRc.jpg)
 ![](https://img.itch.zone/aW1hZ2UvMjc1ODMzNS8xNjQ2MDA5MC5wbmc=/original/r9%2Finc.png)
 ![](https://img.itch.zone/aW1hZ2UvMjc1ODMzNS8xNjQ2MDA4OC5wbmc=/original/Qw1Q%2Fw.png)
+![](https://img.itch.zone/aW1hZ2UvMjc1ODMzNS8yMjg4OTE0OS5qcGc=/original/JGzt9v.jpg)
 ![](https://img.itch.zone/aW1hZ2UvMjc1ODMzNS8xNjQ2MDA5MS5wbmc=/original/aiV0RC.png)
 
 # Using In your projects
@@ -59,11 +61,11 @@ I made a minimal scene that has only the player controller, since the demo scene
 
 Built using Unity 2022.3.13f1. Project files are included for quicker setup, but VR settings are specific for the quest 2 and windows
 
-# Contributing 🤝
+# Contributing
 
 I didn't have time to implement all the features. Check out the issues to see what features are missing and need to be implemented or improved. Adding more sounds is always a bonus.
 
-# Credits 🙏
+# Credits
 
 ### Music
 - [Trailer Music by SondreDrakensson](https://freesound.org/people/SondreDrakensson/sounds/368796/)
