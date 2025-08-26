@@ -27,6 +27,8 @@ namespace UnityEcho.Utils
 
         private int[] _refreshRates;
 
+        public float RefreshRate { get; set; }
+
         public AntiAliasingType AntiAliasing { get; private set; }
 
         private void Awake()
@@ -42,6 +44,15 @@ namespace UnityEcho.Utils
             }
 
             QualitySettings.activeQualityLevelChanged += QualitySettingsOnactiveQualityLevelChanged;
+        }
+
+        private void Start()
+        {
+            var defaultRefreshRate = _defaultRefreshRate;
+            if (PlayerPrefs.HasKey(RefreshRateKey))
+            {
+                defaultRefreshRate = PlayerPrefs.GetFloat(RefreshRateKey);
+            }
 
             if (XRGeneralSettings.Instance.Manager.activeLoader)
             {
@@ -49,12 +60,12 @@ namespace UnityEcho.Utils
 #if PLATFORM_ANDROID
                 if (displaySubsystem.TryGetSupportedDisplayRefreshRates(Allocator.Temp, out var supportedRefreshRates))
                 {
-                    var closest = _defaultRefreshRate;
+                    var closest = defaultRefreshRate;
                     var maxDiff = float.MaxValue;
 
                     for (var i = 0; i < supportedRefreshRates.Length; i++)
                     {
-                        var diff = Mathf.Abs(_defaultRefreshRate - supportedRefreshRates[i]);
+                        var diff = Mathf.Abs(defaultRefreshRate - supportedRefreshRates[i]);
                         if (diff < maxDiff)
                         {
                             maxDiff = diff;
@@ -62,8 +73,16 @@ namespace UnityEcho.Utils
                         }
                     }
 
-                    displaySubsystem.TryRequestDisplayRefreshRate(closest);
+                    if (!displaySubsystem.TryRequestDisplayRefreshRate(closest))
+                    {
+                        Application.targetFrameRate = Mathf.RoundToInt(closest);
+                    }
+
+                    RefreshRate = closest;
                 }
+
+#else
+                Application.targetFrameRate = Mathf.RoundToInt(defaultRefreshRate);
 #endif
             }
         }
@@ -83,7 +102,16 @@ namespace UnityEcho.Utils
                 {
                     PlayerPrefs.SetFloat(RefreshRateKey, value);
                 }
+                else
+                {
+                    Application.targetFrameRate = Mathf.RoundToInt(value);
+                    PlayerPrefs.SetFloat(RefreshRateKey, value);
+                }
+#else
+                    Application.targetFrameRate = Mathf.RoundToInt(value);
+                    PlayerPrefs.SetFloat(RefreshRateKey, value);
 #endif
+                RefreshRate = value;
             }
         }
 

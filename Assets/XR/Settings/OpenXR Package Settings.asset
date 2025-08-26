@@ -165,7 +165,7 @@ MonoBehaviour:
   m_colorSubmissionModes:
     m_List: 00000000
   m_depthSubmissionMode: 0
-  m_optimizeBufferDiscards: 0
+  m_optimizeBufferDiscards: 1
   m_symmetricProjection: 1
 --- !u!114 &-6554647675761553281
 MonoBehaviour:
@@ -515,7 +515,7 @@ MonoBehaviour:
     manifestName: eureka
     enabled: 1
   forceRemoveInternetPermission: 0
-  symmetricProjection: 0
+  symmetricProjection: 1
   foveatedRenderingApi: 0
   systemSplashScreen: {fileID: 0}
   optimizeBufferDiscards: 1

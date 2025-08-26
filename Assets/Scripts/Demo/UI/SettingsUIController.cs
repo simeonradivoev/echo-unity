@@ -83,24 +83,30 @@ namespace UnityEcho.UI
 
 #if PLATFORM_ANDROID
                 displaySubsystem.TryGetSupportedDisplayRefreshRates(Allocator.Temp, out var refreshRates);
+                var refreshRateToggles = new List<QualityToggle>();
+
+                var currentRefreshRate = _settings.RefreshRate;
                 for (var i = 0; i < refreshRates.Length; i++)
                 {
                     var refreshRateToggle = Instantiate(_qualityTogglePrefab, _refreshRatesToggleGroup.transform);
-                    var refreshRateValue = refreshRates[i];
+                    refreshRateToggles.Add(refreshRateToggle);
                     refreshRateToggle.Label.text = refreshRates[i].ToString("F");
-                    if (displaySubsystem.TryGetDisplayRefreshRate(out var refreshRate))
-                    {
-                        refreshRateToggle.Toggle.isOn = refreshRateValue == refreshRate;
-                    }
+                    refreshRateToggle.Toggle.isOn = Mathf.Approximately(currentRefreshRate, refreshRates[i]);
                     refreshRateToggle.Toggle.group = _refreshRatesToggleGroup;
-                    refreshRateToggle.Toggle.onValueChanged.AddListener(
-                        v =>
-                        {
-                            if (v)
+                }
+
+                for (var i = 0; i < refreshRates.Length; i++)
+                {
+                    var refreshRate = refreshRates[i];
+                    refreshRateToggles[i]
+                        .Toggle.onValueChanged.AddListener(
+                            v =>
                             {
-                                _settings.SetRefreshRate(refreshRateValue);
-                            }
-                        });
+                                if (v)
+                                {
+                                    _settings.SetRefreshRate(refreshRate);
+                                }
+                            });
                 }
 #endif
             }

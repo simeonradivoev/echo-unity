@@ -98030,7 +98030,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46d6cfc73c5444afba9f4d3b75c2aa6a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _defaultRefreshRate: 0
+  _defaultRefreshRate: 90
 --- !u!114 &3646450931441262772
 MonoBehaviour:
   m_ObjectHideFlags: 0
