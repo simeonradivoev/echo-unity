@@ -67,12 +67,6 @@ namespace UnityEcho.Mechanics
         private float _grabEaseDuration = 0.1f;
 
         [SerializeField]
-        private Transform _leftFingerPointer;
-
-        [SerializeField]
-        private Transform _rightFingerPointer;
-
-        [SerializeField]
         private float _headLookOffset;
 
         private readonly Vector3[] _fingerOffset = new Vector3[2];

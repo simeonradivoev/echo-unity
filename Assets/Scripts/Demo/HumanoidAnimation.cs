@@ -184,7 +184,7 @@ namespace UnityEcho.Demo
 
             public List<float> Z = new();
 
-            public Vector3 Sample(int fps, float time, EaseType easeType = EaseType.Spline)
+            public new Vector3 Sample(int fps, float time, EaseType easeType = EaseType.Spline)
             {
                 return new Vector3(Sample(X, fps, time, easeType), Sample(Y, fps, time, easeType), Sample(Z, fps, time, easeType));
             }
@@ -225,7 +225,7 @@ namespace UnityEcho.Demo
                     Sample(W, fps, t, easeType));
             }
 
-            public Vector4 Sample(int fps, float t, EaseType easeType = EaseType.Spline)
+            public new Vector4 Sample(int fps, float t, EaseType easeType = EaseType.Spline)
             {
                 return new Vector4(
                     Sample(X, fps, t, easeType),

@@ -1,7 +1,9 @@
 ﻿using System;
-using UnityEditor;
 using UnityEngine;
 using UnityEngine.InputSystem;
+#if UNITY_EDITOR
+using UnityEditor;
+#endif
 
 namespace UnityEcho.Demo
 {
@@ -13,9 +15,6 @@ namespace UnityEcho.Demo
         [SerializeField]
         private InputActionReference _record;
 
-        [SerializeField]
-        private int _fps = 30;
-
         private HumanoidAnimation _animation;
 
         private Animator _animator;
@@ -24,18 +23,13 @@ namespace UnityEcho.Demo
 
         private bool _isRecording;
 
-        private float _nextSampleTime;
-
         private HumanPose _pose;
-
-        private Rigidbody _rigidbody;
 
         private float _startTime;
 
         private void Start()
         {
             _animator = GetComponent<Animator>();
-            _rigidbody = GetComponent<Rigidbody>();
             _record.action.Enable();
             _record.action.performed += ActionOnperformed;
         }
@@ -79,9 +73,6 @@ namespace UnityEcho.Demo
                     _animation.IkHintPositionWeights[i].Record(_animator.GetIKHintPositionWeight((AvatarIKHint)i), t);
                     _animation.IkHintPosition[i].Record(inverseParentPosition.MultiplyPoint(_animator.GetIKHintPosition((AvatarIKHint)i)), t);
                 }
-
-                // Next sample
-                _nextSampleTime += Time.fixedDeltaTime * 2;
             }
 
             _fixedDeltaFrame++;
@@ -97,23 +88,6 @@ namespace UnityEcho.Demo
             }
 
             _isRecording = false;
-        }
-
-        private void OnAnimatorIK(int layerIndex)
-        {
-            if (!_isRecording)
-            {
-                return;
-            }
-
-            var parent = _parent;
-
-            var inverseParentPosition = parent ? parent.worldToLocalMatrix : Matrix4x4.identity;
-            var inverseParentRotation = parent ? Quaternion.Inverse(parent.transform.rotation) : Quaternion.identity;
-
-            if (Time.time >= _nextSampleTime)
-            {
-            }
         }
 
         private void ActionOnperformed(InputAction.CallbackContext obj)

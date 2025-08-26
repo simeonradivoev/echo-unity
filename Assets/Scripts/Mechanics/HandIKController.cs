@@ -15,7 +15,12 @@ namespace UnityEcho.Mechanics
 {
     public class HandIKController : MonoBehaviour
     {
-        public delegate void MoveDelegate(InputDevice device, Vector3 worldPosition, Quaternion rotation, float indexFingerValue);
+        public delegate void MoveDelegate(
+            InputDevice device,
+            Vector3 worldPosition,
+            Vector3 worldBodyVelocity,
+            Quaternion rotation,
+            float indexFingerValue);
 
         [SerializeField]
         private bool _leftHand;
@@ -138,6 +143,7 @@ namespace UnityEcho.Mechanics
                         OnMove?.Invoke(
                             Device,
                             definition.UIRay.position,
+                            _playerRefs.Body.velocity,
                             _grabMoveController.RawRotation,
                             _grabMoveController.HasGrabbed ? 0 : 1 - _indexPointInputValue);
                         break;
@@ -380,42 +386,6 @@ namespace UnityEcho.Mechanics
 
             public float4x4 colliderTransform;
 
-            private bool CheckEdge(Plane trianglePlane, int3 triangle, MeshConnectivityBuilder.Edge edge)
-            {
-                var start = math.mul(colliderTransform, new float4(ConnectivityBuilder.VerticesRaw[triangle[edge.Start]], 1)).xyz;
-                var end = math.mul(colliderTransform, new float4(ConnectivityBuilder.VerticesRaw[triangle[(edge.Start + 1) % 3]], 1)).xyz;
-
-                var dir = end - start;
-                var dirLength = math.length(dir);
-                dir /= dirLength;
-
-                var distance = -math.dot(diskNormal, diskCenter);
-                var a = math.dot(dir, diskNormal);
-                var num = -math.dot(start, diskNormal) - distance;
-                if (Mathf.Approximately(a, 0.0f))
-                {
-                    return false;
-                }
-                var enter = num / a;
-
-                if (enter <= 0.0 || enter > dirLength)
-                {
-                    return false;
-                }
-
-                var intersection = start + dir * enter;
-                var dirFromOrigin = intersection - diskCenter;
-                var dirFromOriginLength = math.length(dirFromOrigin);
-                if (dirFromOriginLength > diskRadius)
-                {
-                    intersectionPoints.Add(diskCenter + dirFromOrigin / dirFromOriginLength * diskRadius);
-                    return false;
-                }
-
-                intersectionPoints.Add(intersection);
-                return true;
-            }
-
             #region Implementation of IJob
 
             public void Execute()
@@ -468,6 +438,42 @@ namespace UnityEcho.Mechanics
             }
 
             #endregion
+
+            private bool CheckEdge(Plane trianglePlane, int3 triangle, MeshConnectivityBuilder.Edge edge)
+            {
+                var start = math.mul(colliderTransform, new float4(ConnectivityBuilder.VerticesRaw[triangle[edge.Start]], 1)).xyz;
+                var end = math.mul(colliderTransform, new float4(ConnectivityBuilder.VerticesRaw[triangle[(edge.Start + 1) % 3]], 1)).xyz;
+
+                var dir = end - start;
+                var dirLength = math.length(dir);
+                dir /= dirLength;
+
+                var distance = -math.dot(diskNormal, diskCenter);
+                var a = math.dot(dir, diskNormal);
+                var num = -math.dot(start, diskNormal) - distance;
+                if (Mathf.Approximately(a, 0.0f))
+                {
+                    return false;
+                }
+                var enter = num / a;
+
+                if (enter <= 0.0 || enter > dirLength)
+                {
+                    return false;
+                }
+
+                var intersection = start + dir * enter;
+                var dirFromOrigin = intersection - diskCenter;
+                var dirFromOriginLength = math.length(dirFromOrigin);
+                if (dirFromOriginLength > diskRadius)
+                {
+                    intersectionPoints.Add(diskCenter + dirFromOrigin / dirFromOriginLength * diskRadius);
+                    return false;
+                }
+
+                intersectionPoints.Add(intersection);
+                return true;
+            }
         }
     }
 }

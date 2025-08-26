@@ -10,6 +10,7 @@ namespace UnityEcho.UI.XR
 
         /// <summary>
         /// Same as ExtendedPointerEventData but last value
+        /// Also compensated with the velocity of the body that represent the tracked device. To avoid jitter when moving fast.
         /// </summary>
         public Vector3 trackedDeviceLastPosition { get; set; }
 

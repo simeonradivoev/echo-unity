@@ -11,6 +11,8 @@ namespace UnityEcho.Demo
 
         private readonly List<Canvas> _canvases = new();
 
+        private readonly List<Light> _lights = new();
+
         private readonly List<Renderer> _renderers = new();
 
         private bool _culled;
@@ -41,6 +43,8 @@ namespace UnityEcho.Demo
                 yield return null;
                 _canvases.AddRange(rootObject.GetComponentsInChildren<Canvas>());
                 yield return null;
+                _lights.AddRange(rootObject.GetComponentsInChildren<Light>());
+                yield return null;
             }
 
             _finishedInitialization = true;
@@ -57,6 +61,11 @@ namespace UnityEcho.Demo
             foreach (var canvas in _canvases)
             {
                 canvas.enabled = !_culled;
+            }
+
+            foreach (var light in _lights)
+            {
+                light.enabled = !_culled;
             }
         }
     }

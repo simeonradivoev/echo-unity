@@ -11,6 +11,9 @@ namespace UnityEcho.Mechanics
         private Rigidbody _body;
 
         [SerializeField]
+        private Rigidbody _headSpaceAnchorBody;
+
+        [SerializeField]
         private Transform _headSpace;
 
         [SerializeField]
@@ -31,5 +34,7 @@ namespace UnityEcho.Mechanics
         public SphereCollider HeadCollider => _headCollider;
 
         public Animator Animator => _animator;
+
+        public Rigidbody HeadSpaceAnchorBody => _headSpaceAnchorBody;
     }
 }

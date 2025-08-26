@@ -243,6 +243,15 @@ namespace UnityEcho.Mechanics
             _handRigidbody = GetComponent<Rigidbody>();
             _bodyCollisions = _playerRefs.Body.GetComponent<GrabbedCollisionEventsConnector>();
             PhysicallyAccurateRelease = _physicallyAccurateRelease;
+
+            // Needs to be on awake since it behaves strangely in builds otherwise
+            // Has to do with the initial position of the hand rigidbodies
+            // They also need to be at 0 local pos
+            HeadToDynamicJoint = _handRigidbody.gameObject.AddComponent<ConfigurableJoint>();
+            HeadToDynamicJoint.CopyJoint(_headToDynamicJointPrefab);
+            HeadToDynamicJoint.connectedBody = _playerRefs.Body;
+            HeadToDynamicJoint.connectedMassScale = _idleMassScale;
+            UpdateHandAnchor();
         }
 
         private void Start()
@@ -255,12 +264,6 @@ namespace UnityEcho.Mechanics
 
             _rawPosition = (_leftHand ? Vector3.left : Vector3.right) * 0.5f;
             RawClampedWorldPosition = transform.TransformPoint(_rawPosition);
-
-            HeadToDynamicJoint = _handRigidbody.gameObject.AddComponent<ConfigurableJoint>();
-            HeadToDynamicJoint.CopyJoint(_headToDynamicJointPrefab);
-            HeadToDynamicJoint.connectedBody = _playerRefs.Body;
-            HeadToDynamicJoint.connectedMassScale = _idleMassScale;
-            UpdateHandAnchor();
         }
 
         private void Update()
@@ -691,7 +694,10 @@ namespace UnityEcho.Mechanics
                         rootBody.AddForce(_playerRefs.HeadSpace.TransformDirection(_rawVelocity) * force, ForceMode.VelocityChange);
                     }
 
-                    UpdateDynamicLocomotionVelocity(rootBody);
+                    if (PhysicallyAccurateRelease)
+                    {
+                        UpdateDynamicLocomotionVelocity(rootBody);
+                    }
                 }
                 else
                 {
@@ -767,7 +773,7 @@ namespace UnityEcho.Mechanics
                     DynamicGrabJoint.slerpDrive = zDrive;
                 }
 
-                var bodyRotation = Quaternion.Inverse(_playerRefs.HeadSpace.transform.rotation);
+                DynamicGrabJoint.anchor = -_playerRefs.HeadSpace.localPosition;
                 DynamicGrabJoint.axis = Vector3.right;
                 DynamicGrabJoint.secondaryAxis = Vector3.up;
 

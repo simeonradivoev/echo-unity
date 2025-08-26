@@ -24,11 +24,11 @@ namespace UnityEngine.InputSystem.UI
 
         public XRExtendedPointerEventData eventData;
 
-        private float m_Extension;
-
         private float m_AltitudeAngle;
 
         private float m_AzimuthAngle;
+
+        private float m_Extension;
 
         private float m_Pressure;
 
@@ -40,11 +40,42 @@ namespace UnityEngine.InputSystem.UI
 
         private float m_Twist;
 
+        private Vector3 m_WorldBodyVelocity;
+
         private Quaternion m_WorldOrientation;
 
         private Vector3 m_WorldOriginPosition;
 
         private Vector3 m_WorldPosition;
+
+        public PointerModel(XRExtendedPointerEventData eventData)
+        {
+            this.eventData = eventData;
+
+            changedThisFrame = false;
+
+            leftButton = default;
+            leftButton.OnEndFrame();
+            rightButton = default;
+            rightButton.OnEndFrame();
+            middleButton = default;
+            middleButton.OnEndFrame();
+
+            m_ScreenPosition = default;
+            m_ScrollDelta = default;
+            m_WorldOrientation = default;
+            m_WorldPosition = default;
+            m_WorldBodyVelocity = default;
+            m_WorldOriginPosition = default;
+
+            m_Pressure = default;
+            m_AzimuthAngle = default;
+            m_AltitudeAngle = default;
+            m_Twist = default;
+            m_Radius = default;
+            m_Extension = default;
+            lastWorldPosition = default;
+        }
 
         public UIPointerType pointerType => eventData.pointerType;
 
@@ -71,6 +102,19 @@ namespace UnityEngine.InputSystem.UI
                 if (m_Extension != value)
                 {
                     m_Extension = value;
+                    changedThisFrame = true;
+                }
+            }
+        }
+
+        public Vector3 worldBodyVelocity
+        {
+            get => m_WorldBodyVelocity;
+            set
+            {
+                if (m_WorldBodyVelocity != value)
+                {
+                    m_WorldBodyVelocity = value;
                     changedThisFrame = true;
                 }
             }
@@ -179,34 +223,6 @@ namespace UnityEngine.InputSystem.UI
                     m_Radius = value;
                 }
             }
-        }
-
-        public PointerModel(XRExtendedPointerEventData eventData)
-        {
-            this.eventData = eventData;
-
-            changedThisFrame = false;
-
-            leftButton = default;
-            leftButton.OnEndFrame();
-            rightButton = default;
-            rightButton.OnEndFrame();
-            middleButton = default;
-            middleButton.OnEndFrame();
-
-            m_ScreenPosition = default;
-            m_ScrollDelta = default;
-            m_WorldOrientation = default;
-            m_WorldPosition = default;
-            m_WorldOriginPosition = default;
-
-            m_Pressure = default;
-            m_AzimuthAngle = default;
-            m_AltitudeAngle = default;
-            m_Twist = default;
-            m_Radius = default;
-            m_Extension = default;
-            lastWorldPosition = default;
         }
 
         public void OnFrameFinished()

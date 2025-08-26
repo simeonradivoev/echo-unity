@@ -1,0 +1,62 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 77105025efd2ed947be2b97983c2b7c2, type: 3}
+  m_Name: Concrete
+  m_EditorClassIdentifier: 
+  data:
+    absorption:
+      selection: 2147483647
+      points:
+      - frequency: 125
+        data: 0.01
+      - frequency: 250
+        data: 0.01
+      - frequency: 500
+        data: 0.02
+      - frequency: 1000
+        data: 0.02
+      - frequency: 2000
+        data: 0.02
+      - frequency: 4000
+        data: 0.02
+    transmission:
+      selection: 2147483647
+      points:
+      - frequency: 125
+        data: 0.004
+      - frequency: 250
+        data: 0.0079
+      - frequency: 500
+        data: 0.0056
+      - frequency: 1000
+        data: 0.0016
+      - frequency: 2000
+        data: 0.0014
+      - frequency: 4000
+        data: 0.0005
+    scattering:
+      selection: 2147483647
+      points:
+      - frequency: 125
+        data: 0.1
+      - frequency: 250
+        data: 0.11
+      - frequency: 500
+        data: 0.12
+      - frequency: 1000
+        data: 0.13
+      - frequency: 2000
+        data: 0.14
+      - frequency: 4000
+        data: 0.15
+    color: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
+  preset: 9

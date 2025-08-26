@@ -138,11 +138,7 @@ PlayerSettings:
   vulkanEnableCommandBufferRecycling: 1
   loadStoreDebugModeEnabled: 0
   bundleVersion: 0.1.0
-  preloadedAssets:
-  - {fileID: 3652061741680552628, guid: 6de5837fca66afc489b146bce6a23985, type: 2}
-  - {fileID: 11400000, guid: 86c3fac11479d5044b8aec3d33a748ae, type: 2}
-  - {fileID: 11400000, guid: b98c406b19ea63d4499bf841c41ce003, type: 2}
-  - {fileID: -9174978584171689743, guid: dd5a2c6056348eb4b8ccdcffd5ecb615, type: 2}
+  preloadedAssets: []
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -155,7 +151,7 @@ PlayerSettings:
   enableOpenGLProfilerGPURecorders: 1
   allowHDRDisplaySupport: 1
   useHDRDisplay: 1
-  hdrBitDepth: 0
+  hdrBitDepth: 1
   m_ColorGamuts: 00000000
   targetPixelDensity: 30
   resolutionScalingMode: 0
@@ -172,7 +168,7 @@ PlayerSettings:
     iPhone: 0
     tvOS: 0
   overrideDefaultApplicationIdentifier: 1
-  AndroidBundleVersionCode: 1
+  AndroidBundleVersionCode: 2
   AndroidMinSdkVersion: 23
   AndroidTargetSdkVersion: 0
   AndroidPreferredInstallLocation: 1
@@ -820,7 +816,7 @@ PlayerSettings:
     QNX: ULTIMATEXR_USE_WINDOWSMIXEDREALITY_SDK
     Server: PROBUILDER_EXPERIMENTAL_FEATURES
     Stadia: ULTIMATEXR_USE_WINDOWSMIXEDREALITY_SDK
-    Standalone: USE_INPUT_SYSTEM_POSE_CONTROL;ULTIMATEXR_USE_WINDOWSMIXEDREALITY_SDK;PROBUILDER_EXPERIMENTAL_FEATURES;VRC_LIGHT_VOLUMES
+    Standalone: USE_INPUT_SYSTEM_POSE_CONTROL;ULTIMATEXR_USE_WINDOWSMIXEDREALITY_SDK;PROBUILDER_EXPERIMENTAL_FEATURES
     VisionOS: ULTIMATEXR_USE_WINDOWSMIXEDREALITY_SDK
     WebGL: ULTIMATEXR_USE_WINDOWSMIXEDREALITY_SDK
     Windows Store Apps: USE_INPUT_SYSTEM_POSE_CONTROL;USE_INPUT_SYSTEM_POSE_CONTROL;ULTIMATEXR_USE_WINDOWSMIXEDREALITY_SDK

@@ -20,11 +20,12 @@ MonoBehaviour:
   disableConsoleLogs: 0
   dontDestroyOnLoad: 1
   dynamicSourceAllocation: 1
-  soundChannelPrefabOverride: {fileID: 0}
+  soundChannelPrefabOverride: {fileID: 5855148236878334225, guid: 08ac90ea29ce0bb4085ee00e5777a612,
+    type: 3}
   musicChannelPrefabOverride: {fileID: 0}
   stopSoundsOnSceneChanged: 0
   stopMusicOnSceneChanged: 0
-  spatializeLateUpdate: 0
+  spatializeLateUpdate: 1
   spatializationMode: 0
   timeScaledSounds: 1
   mixer: {fileID: 24100000, guid: 98b3bbedb9606c44ea9eff3056cfe0c7, type: 2}

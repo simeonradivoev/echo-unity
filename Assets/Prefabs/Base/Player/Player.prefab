@@ -841,7 +841,8 @@ MonoBehaviour:
     type: 3}
   _dynamicGrabJointPrefab: {fileID: 1179660584016942274, guid: dc5d9a8d94e018a4dbf5001867e8f7ce,
     type: 3}
-  _headToDynamicJointPrefab: {fileID: 0}
+  _headToDynamicJointPrefab: {fileID: 2982432723539276846, guid: 3190fcf481b984d45a77381ebb69d4b8,
+    type: 3}
   _headFollower: {fileID: 9014022928634145461}
   _forward: {fileID: 0}
   _grabActionRef: {fileID: 6975215416723966302, guid: 7bd14a6082be6be4bad0a11dcbe18252,
@@ -1650,6 +1651,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _body: {fileID: 1429137715762596516}
+  _headSpaceAnchorBody: {fileID: 1200901912227560047}
   _headSpace: {fileID: 1559211862229909250}
   _head: {fileID: 8400264568070335827}
   _headCollider: {fileID: 3293151440168315836}

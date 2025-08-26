@@ -1,11 +1,11 @@
 ﻿using System.Collections.Generic;
-using Unity.Collections;
 using UnityEngine;
 using UnityEngine.Rendering.Universal;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
-using UnityEngine.XR.OpenXR.Features.Meta;
 #if PLATFORM_ANDROID
+using UnityEngine.XR.OpenXR.Features.Meta;
+using Unity.Collections;
 #endif
 
 namespace UnityEcho.Utils
@@ -46,6 +46,7 @@ namespace UnityEcho.Utils
             if (XRGeneralSettings.Instance.Manager.activeLoader)
             {
                 var displaySubsystem = XRGeneralSettings.Instance.Manager.activeLoader.GetLoadedSubsystem<XRDisplaySubsystem>();
+#if PLATFORM_ANDROID
                 if (displaySubsystem.TryGetSupportedDisplayRefreshRates(Allocator.Temp, out var supportedRefreshRates))
                 {
                     var closest = _defaultRefreshRate;
@@ -63,6 +64,7 @@ namespace UnityEcho.Utils
 
                     displaySubsystem.TryRequestDisplayRefreshRate(closest);
                 }
+#endif
             }
         }
 
@@ -76,10 +78,12 @@ namespace UnityEcho.Utils
             if (XRGeneralSettings.Instance.Manager.activeLoader)
             {
                 var displaySubsystem = XRGeneralSettings.Instance.Manager.activeLoader.GetLoadedSubsystem<XRDisplaySubsystem>();
+#if PLATFORM_ANDROID
                 if (displaySubsystem.TryRequestDisplayRefreshRate(value))
                 {
                     PlayerPrefs.SetFloat(RefreshRateKey, value);
                 }
+#endif
             }
         }
 

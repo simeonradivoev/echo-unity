@@ -1199,7 +1199,8 @@ namespace UnityEngine.InputSystem.UI
 
                 eventData.trackedDeviceOrientation = rotation;
                 eventData.trackedDevicePosition = position;
-                eventData.trackedDeviceLastPosition = lastPosition;
+                // We want to avoid jitter when moving fast, so just shift the last position so it becomes relative.
+                eventData.trackedDeviceLastPosition = lastPosition + state.worldBodyVelocity * Time.deltaTime;
                 eventData.extension = state.extension;
             }
             else
@@ -2878,7 +2879,7 @@ namespace UnityEngine.InputSystem.UI
             SetActionCallbacks(true);
         }
 
-        private void OnXRPointDelegate(InputDevice device, Vector3 position, Quaternion rotation, float indexInput)
+        private void OnXRPointDelegate(InputDevice device, Vector3 position, Vector3 bodyVelocity, Quaternion rotation, float indexInput)
         {
             var index = GetPointerStateIndexFor(device);
             if (index == -1)
@@ -2888,6 +2889,7 @@ namespace UnityEngine.InputSystem.UI
 
             ref var state = ref GetPointerStateForIndex(index);
             state.worldPosition = position;
+            state.worldBodyVelocity = bodyVelocity;
             state.worldOrientation = rotation;
             state.extension = indexInput;
         }

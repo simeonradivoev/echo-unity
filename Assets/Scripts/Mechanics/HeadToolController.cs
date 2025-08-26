@@ -49,7 +49,7 @@ namespace UnityEcho.Mechanics
             HandIKController.OnMove -= IKControllerOnOnMove;
         }
 
-        private void IKControllerOnOnMove(InputDevice device, Vector3 position, Quaternion rotation, float extension)
+        private void IKControllerOnOnMove(InputDevice device, Vector3 position, Vector3 worldBodyVelocity, Quaternion rotation, float extension)
         {
             var plane = new Plane(transform.forward, transform.position);
             var fingerForward = rotation * Vector3.forward;

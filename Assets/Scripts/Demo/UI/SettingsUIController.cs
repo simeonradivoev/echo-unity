@@ -2,14 +2,16 @@
 using System;
 using System.Collections.Generic;
 using TMPro;
-using Unity.Collections;
 using UnityEcho.Mechanics;
 using UnityEcho.Utils;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.XR;
 using UnityEngine.XR.Management;
+#if PLATFORM_ANDROID
 using UnityEngine.XR.OpenXR.Features.Meta;
+using Unity.Collections;
+#endif
 
 namespace UnityEcho.UI
 {
@@ -79,6 +81,7 @@ namespace UnityEcho.UI
                 var displaySubsystem = XRGeneralSettings.Instance.Manager.activeLoader.GetLoadedSubsystem<XRDisplaySubsystem>();
                 displaySubsystem.foveatedRenderingLevel = 2;
 
+#if PLATFORM_ANDROID
                 displaySubsystem.TryGetSupportedDisplayRefreshRates(Allocator.Temp, out var refreshRates);
                 for (var i = 0; i < refreshRates.Length; i++)
                 {
@@ -99,6 +102,7 @@ namespace UnityEcho.UI
                             }
                         });
                 }
+#endif
             }
 
             foreach (var value in Enum.GetValues(typeof(GraphicsSettingsManager.AntiAliasingType)))
