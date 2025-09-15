@@ -2,10 +2,18 @@
 
 namespace UnityEcho.Mechanics
 {
+    /// <summary>
+    /// Handles the hip joint.
+    /// It moves the rigibody anchor the spring is attached to, needed to avoid issues with the joint resetting rotation references (internal unity
+    /// behavioir)
+    /// </summary>
     public class HipPositioner : MonoBehaviour
     {
         [SerializeField]
         private PlayerReferences _references;
+
+        [SerializeField]
+        private IKController _ikController;
 
         [SerializeField]
         private Rigidbody _hipRigidbody;
@@ -28,9 +36,13 @@ namespace UnityEcho.Mechanics
 
         private void FixedUpdate()
         {
-            _headAnchor.Move(
-                _references.Head.position,
-                Quaternion.RotateTowards(_headAnchor.rotation, _references.HeadSpace.rotation, Time.deltaTime * _headAnchorRotationSpeed));
+            // Add easing to avoid physics glitches
+            var targetRotation = Quaternion.RotateTowards(
+                _headAnchor.rotation,
+                Quaternion.LookRotation(_ikController.TorsoDirection, _references.HeadSpace.up),
+                Time.deltaTime * _headAnchorRotationSpeed);
+
+            _headAnchor.Move(_references.Head.position, targetRotation);
             _hipsJoint.anchor = _hipsAcnhorJointOffset;
         }
     }

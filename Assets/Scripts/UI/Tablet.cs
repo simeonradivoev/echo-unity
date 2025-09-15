@@ -18,6 +18,9 @@ namespace UnityEcho.UI
         [SerializeField]
         private TMP_Text _title;
 
+        [SerializeField]
+        private TMP_Text _versionNumber;
+
         private readonly Stack<TabletPanel> _stack = new();
 
         public TabletPanel[] Panels { get; private set; }
@@ -31,6 +34,7 @@ namespace UnityEcho.UI
         {
             SetActivePanel(_defaultPanel);
             _backButton.onClick.AddListener(Return);
+            _versionNumber.text = Application.version;
         }
 
         private void OnDestroy()

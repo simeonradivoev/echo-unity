@@ -1566,7 +1566,6 @@ GameObject:
   - component: {fileID: 1006940949133311929}
   - component: {fileID: 1293210779439699252}
   - component: {fileID: 3928844169058885925}
-  - component: {fileID: 6786800547347018870}
   - component: {fileID: 5547575393313944926}
   m_Layer: 6
   m_Name: Player
@@ -1741,23 +1740,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _defaultRealisticMovement: 0
   _references: {fileID: 4692532044414929816}
---- !u!114 &6786800547347018870
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6243843204849156607}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ef02e4ccc21645298f0d09e4b00f1f18, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _references: {fileID: 4692532044414929816}
-  _hipRigidbody: {fileID: 0}
-  _hipsAcnhorJointOffset: {x: 0, y: 0.5, z: 0.1}
-  _headAnchor: {fileID: 1200901912227560047}
-  _headAnchorRotationSpeed: 180
 --- !u!114 &5547575393313944926
 MonoBehaviour:
   m_ObjectHideFlags: 0

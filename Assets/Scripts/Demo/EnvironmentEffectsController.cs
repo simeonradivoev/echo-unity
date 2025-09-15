@@ -4,6 +4,9 @@ using UnityEngine.Audio;
 
 namespace UnityEcho.Demo
 {
+    /// <summary>
+    /// Handles various environmental variables, culling and sound.
+    /// </summary>
     public class EnvironmentEffectsController : MonoBehaviour
     {
         [SerializeField]
